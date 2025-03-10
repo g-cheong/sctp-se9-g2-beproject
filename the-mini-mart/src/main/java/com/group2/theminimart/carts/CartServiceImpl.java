@@ -31,11 +31,14 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart updateCart(Long id, Cart cart) {
-        return cartRepository.save(cartRepository.findById(id).get());
+        Cart updatedCart = cartRepository.findById(id).get();
+        updatedCart.setCount(cart.getCount());
+        updatedCart.setTotal(cart.getTotal());
+        return cartRepository.save(updatedCart);
     }
 
     @Override
     public void deleteCart(Long id) {
-        cartRepository.delete(cartRepository.findById(id).get());
+        cartRepository.deleteById(id);
     }
 }
