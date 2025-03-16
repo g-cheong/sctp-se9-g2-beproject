@@ -1,9 +1,12 @@
-package com.group2.theminimart.carts;
+package com.group2.theminimart.service;
 
 import java.util.ArrayList;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+
+import com.group2.theminimart.entity.Cart;
+import com.group2.theminimart.repository.CartRepository;
 
 @Primary
 @Service
@@ -25,7 +28,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Cart getCart( Long id) {
+    public Cart getCart(Long id) {
         return cartRepository.findById(id).get();
     }
 

@@ -1,4 +1,4 @@
-package com.group2.theminimart.carts;
+package com.group2.theminimart.controller;
 
 import java.util.ArrayList;
 
@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.group2.theminimart.entity.Cart;
+import com.group2.theminimart.service.CartService;
 
 @RestController
 @RequestMapping("/cart")

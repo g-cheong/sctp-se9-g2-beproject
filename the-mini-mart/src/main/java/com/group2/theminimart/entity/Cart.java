@@ -1,14 +1,14 @@
-package com.group2.theminimart.carts;
+package com.group2.theminimart.entity;
 
-import java.util.List;
+// import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
+// import jakarta.persistence.ManyToMany;
+// import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,15 +22,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="cart")
+@Table(name = "cart")
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column(name = "id")
     private Long id;
-    @Column(name="count")
+    @Column(name = "count")
     private int count;
-    @Column(name="total")
+    @Column(name = "total")
     private int total;
 
     // @ManyToOne(mappedBy="user")

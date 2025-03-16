@@ -1,4 +1,4 @@
-package com.group2.theminimart.users;
+package com.group2.theminimart.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,13 +18,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="users")
+@Table(name = "users")
 public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column
     private Long id;
-    @Column(name="password")
+    @Column
+    private String username;
+    @Column
     private String password;
 
 }

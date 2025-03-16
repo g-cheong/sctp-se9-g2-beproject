@@ -1,13 +1,16 @@
-package com.group2.theminimart.users;
+package com.group2.theminimart.service;
 
 import java.util.ArrayList;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import com.group2.theminimart.entity.Users;
+import com.group2.theminimart.repository.UsersRepository;
+
 @Primary
 @Service
-public class UsersServiceImpl implements UsersService{
+public class UsersServiceImpl implements UsersService {
     private UsersRepository usersRepository;
 
     public UsersServiceImpl(UsersRepository usersRepository) {
