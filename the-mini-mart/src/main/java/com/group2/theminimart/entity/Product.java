@@ -2,7 +2,9 @@ package com.group2.theminimart.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +27,7 @@ import lombok.NoArgsConstructor;
 public class Product {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column
+  @Column(name = "id")
   private Long id;
 
   @Column
@@ -46,5 +48,7 @@ public class Product {
   @JsonIgnoreProperties("product")
   @OneToMany(mappedBy = "product")
   private List<Rating> ratings;
-
+  @JsonIgnoreProperties("product")
+  @OneToMany(mappedBy = "product")
+  private List<CartContent> cart;
 }

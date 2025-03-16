@@ -2,7 +2,9 @@ package com.group2.theminimart.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,7 +28,7 @@ public class User {
     // TODO to implement validation
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "id")
     private Long id;
     @Column
     private String username;
@@ -36,5 +38,7 @@ public class User {
     @JsonIgnoreProperties("user")
     @OneToMany(mappedBy = "user")
     private List<Rating> ratings;
-
+    @JsonIgnoreProperties("user")
+    @OneToMany(mappedBy = "user")
+    private List<CartContent> cart;
 }
