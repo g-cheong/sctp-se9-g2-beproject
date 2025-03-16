@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +21,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name = "ratings")
+@Table(name = "ratings", uniqueConstraints = {
+    @UniqueConstraint(name = "UniqueUserAndProduct", columnNames = { "userId", "productId" }) })
 public class Rating {
   // TODO to implement validation
   @Id
