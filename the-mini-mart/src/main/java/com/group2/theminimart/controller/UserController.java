@@ -38,7 +38,7 @@ public class UserController {
     @PostMapping("/{userId}/products/{productId}/ratings")
     public ResponseEntity<Rating> createProductRating(@PathVariable Long userId, @PathVariable Long productId,
             @RequestBody Rating rating) {
-        return new ResponseEntity<>(userService.addRatingToProduct(userId, productId, rating), HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.addProductRating(userId, productId, rating), HttpStatus.CREATED);
     }
 
     // Read
@@ -53,6 +53,16 @@ public class UserController {
         return new ResponseEntity<>(userService.getUser(id), HttpStatus.OK);
     }
 
+    @GetMapping("/{id}/ratings")
+    public ResponseEntity<List<Rating>> getRatings(@PathVariable Long id) {
+        return new ResponseEntity<>(userService.getRatings(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/products/{productId}/ratings")
+    public ResponseEntity<Rating> getRatings(@PathVariable Long id, @PathVariable Long productId) {
+        return new ResponseEntity<>(userService.getRatingByProductId(id, productId), HttpStatus.OK);
+    }
+
     // Update
 
     @PutMapping("/{id}")
@@ -60,11 +70,23 @@ public class UserController {
         return new ResponseEntity<>(userService.updateUser(id, user), HttpStatus.OK);
     }
 
+    @PutMapping("/{userId}/products/{productId}/ratings")
+    public ResponseEntity<Rating> updateProductRating(@PathVariable Long userId, @PathVariable Long productId,
+            @RequestBody Rating rating) {
+        return new ResponseEntity<>(userService.updateProductRating(userId, productId, rating), HttpStatus.OK);
+    }
+
     // Delete
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/{userId}/products/{productId}/ratings")
+    public ResponseEntity<HttpStatus> deleteProductRating(@PathVariable Long userId, @PathVariable Long productId) {
+        userService.deleteProductRating(userId, productId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
