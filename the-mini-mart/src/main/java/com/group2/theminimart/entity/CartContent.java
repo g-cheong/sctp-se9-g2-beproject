@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,9 +32,11 @@ public class CartContent {
     @Column(name = "id")
     private Long id;
     @Column(name = "count")
+    @Positive(message = "count must be a postive number")
     private int count;
+    @Positive(message = "total must be a positive number")
     @Column(name = "total")
-    private int total;
+    private double total;
 
     @JsonIgnoreProperties("cart")
     @ManyToOne(optional = false)

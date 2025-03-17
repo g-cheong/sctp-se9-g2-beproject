@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,8 +31,10 @@ public class User {
     @Column(name = "id")
     private Long id;
     @Column
+    @Size(min = 3, message = "username must be at least 3 characters long")
     private String username;
     @Column
+    @Size(min = 8, message = "password must be at least 8 characters long")
     private String password;
 
     @JsonIgnoreProperties("user")

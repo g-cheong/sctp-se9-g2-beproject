@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import com.group2.theminimart.entity.CartContent;
+import com.group2.theminimart.exception.CartNotFoundException;
 import com.group2.theminimart.repository.CartContentRepository;
 
 
@@ -31,12 +32,12 @@ public class CartContentServiceImpl implements CartContentService {
 
     @Override
     public CartContent getCartContent(Long id) {
-        return cartContentRepository.findById(id).get();
+        return cartContentRepository.findById(id).orElseThrow(() -> new CartNotFoundException(id));
     }
 
     @Override
     public CartContent updateCartContent(Long id, CartContent cartContent) {
-        CartContent updatedCartContent = cartContentRepository.findById(id).get();
+        CartContent updatedCartContent = cartContentRepository.findById(id).orElseThrow(() ->  new CartNotFoundException(id));
         updatedCartContent.setCount(cartContent.getCount());
         updatedCartContent.setTotal(cartContent.getTotal());
         return cartContentRepository.save(updatedCartContent);
