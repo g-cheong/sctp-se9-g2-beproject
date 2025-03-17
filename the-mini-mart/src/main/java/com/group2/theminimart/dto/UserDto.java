@@ -19,5 +19,5 @@ public class UserDto {
   private Long id;
   private String username;
   // private List<Rating> ratings;
-  private List<CartContent> cart;
+  // private List<CartContent> cart;
 }

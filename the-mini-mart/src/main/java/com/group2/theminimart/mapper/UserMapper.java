@@ -7,8 +7,8 @@ public class UserMapper {
   public static UserDto UsertoDto(User user) {
     return new UserDto(
         user.getId(),
-        user.getUsername(),
-        // user.getRatings(),
-        user.getCart());
+        user.getUsername());
+    // user.getRatings(),
+    // user.getCart());
   }
 }
