@@ -2,7 +2,7 @@ package com.group2.theminimart.entity;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,10 +49,11 @@ public class Product {
   @Column
   private String image;
 
-  @JsonIgnoreProperties("product")
+  @JsonIgnore
   @OneToMany(mappedBy = "product")
-  private List<Rating> ratings;
-  @JsonIgnoreProperties("product")
+  private List<Rating> inratings;
+
+  @JsonIgnore
   @OneToMany(mappedBy = "product")
   private List<CartContent> cart;
 }

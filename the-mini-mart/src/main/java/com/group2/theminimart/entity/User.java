@@ -2,7 +2,7 @@ package com.group2.theminimart.entity;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -37,10 +37,11 @@ public class User {
     @Size(min = 8, message = "password must be at least 8 characters long")
     private String password;
 
-    @JsonIgnoreProperties("user")
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Rating> ratings;
-    @JsonIgnoreProperties("user")
+
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<CartContent> cart;
 }

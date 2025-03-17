@@ -65,12 +65,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Rating> getRatings(Long userId) {
+    public List<Rating> getUserRatings(Long userId) {
         return ratingRepository.findAllByUser_Id(userId).orElseThrow(() -> new RatingNotFoundException(userId));
     }
 
     @Override
-    public Rating getRatingByProductId(Long userId, Long productId) {
+    public Rating getUserRatingByProductId(Long userId, Long productId) {
         return ratingRepository.findByUser_IdAndProduct_Id(userId, productId)
                 .orElseThrow(() -> new RatingNotFoundException(userId, productId));
     }

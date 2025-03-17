@@ -64,13 +64,13 @@ public class UserController {
     }
 
     @GetMapping("/{id}/ratings")
-    public ResponseEntity<List<Rating>> getRatings(@PathVariable Long id) {
-        return new ResponseEntity<>(userService.getRatings(id), HttpStatus.OK);
+    public ResponseEntity<List<Rating>> getUserRatings(@PathVariable Long id) {
+        return new ResponseEntity<>(userService.getUserRatings(id), HttpStatus.OK);
     }
 
     @GetMapping("/{id}/products/{productId}/ratings")
-    public ResponseEntity<Rating> getRatings(@PathVariable Long id, @PathVariable Long productId) {
-        return new ResponseEntity<>(userService.getRatingByProductId(id, productId), HttpStatus.OK);
+    public ResponseEntity<Rating> getUserRating(@PathVariable Long id, @PathVariable Long productId) {
+        return new ResponseEntity<>(userService.getUserRatingByProductId(id, productId), HttpStatus.OK);
     }
 
     // Update

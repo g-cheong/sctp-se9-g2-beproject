@@ -17,9 +17,9 @@ public interface UserService {
 
     public void deleteUser(Long id);
 
-    public List<Rating> getRatings(Long userId);
+    public List<Rating> getUserRatings(Long userId);
 
-    public Rating getRatingByProductId(Long userId, Long productId);
+    public Rating getUserRatingByProductId(Long userId, Long productId);
 
     public Rating addProductRating(Long userId, Long productId, Rating rating);
 

@@ -2,6 +2,10 @@ package com.group2.theminimart.exception;
 
 public class RatingNotFoundException extends RuntimeException {
 
+  public RatingNotFoundException() {
+    super("Could not find rating with that id.");
+  }
+
   public RatingNotFoundException(Long userId) {
     super("Could not find rating for user id: " + userId);
   }
