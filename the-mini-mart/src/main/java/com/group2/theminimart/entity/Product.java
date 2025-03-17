@@ -32,12 +32,12 @@ public class Product {
   private Long id;
 
   @Column
-  @NotBlank(message = "Product title is required.")
+  @NotBlank(message = "Product title is required")
   private String title;
 
   @Column
-  @NotNull(message = "Product price is required.")
-  @Positive(message = "Product price must be greater than 0.")
+  @NotNull(message = "Product price is required")
+  @Positive(message = "Product price must be greater than 0")
   private Double price;
 
   @Column
