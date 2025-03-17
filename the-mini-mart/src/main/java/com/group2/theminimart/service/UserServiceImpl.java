@@ -1,16 +1,19 @@
 package com.group2.theminimart.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import com.group2.theminimart.dto.UserDto;
 import com.group2.theminimart.entity.Product;
 import com.group2.theminimart.entity.Rating;
 import com.group2.theminimart.entity.User;
 import com.group2.theminimart.exception.ProductNotFoundException;
 import com.group2.theminimart.exception.RatingNotFoundException;
 import com.group2.theminimart.exception.UserNotFoundException;
+import com.group2.theminimart.mapper.UserMapper;
 import com.group2.theminimart.repository.ProductRepository;
 import com.group2.theminimart.repository.RatingRepository;
 import com.group2.theminimart.repository.UserRepository;
@@ -32,25 +35,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(User users) {
-        return userRepository.save(users);
+    public UserDto createUser(User user) {
+        return UserMapper.UsertoDto(userRepository.save(user));
     }
 
     @Override
-    public List<User> getUsers() {
-        return (List<User>) userRepository.findAll();
+    public List<UserDto> getUsers() {
+        List<User> allUser = userRepository.findAll();
+
+        return allUser.stream().map((user) -> UserMapper.UsertoDto(user)).collect(Collectors.toList());
     }
 
     @Override
-    public User getUser(Long id) {
-        return userRepository.findById(id).get();
+    public UserDto getUser(Long id) {
+        return UserMapper.UsertoDto(userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id)));
     }
 
     @Override
-    public User updateUser(Long id, User users) {
-        User updatedUsers = userRepository.findById(id).get();
+    public UserDto updateUser(Long id, User users) {
+        User updatedUsers = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         updatedUsers.setPassword(users.getPassword());
-        return userRepository.save(updatedUsers);
+        return UserMapper.UsertoDto(userRepository.save(updatedUsers));
     }
 
     @Override

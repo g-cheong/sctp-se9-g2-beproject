@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.group2.theminimart.entity.CartContent;
+import com.group2.theminimart.dto.UserDto;
 import com.group2.theminimart.entity.Rating;
 import com.group2.theminimart.entity.User;
 import com.group2.theminimart.service.CartContentService;
@@ -35,7 +36,7 @@ public class UserController {
     // Create
 
     @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody User user) {
         return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
     }
 
@@ -53,12 +54,12 @@ public class UserController {
     // Read
 
     @GetMapping
-    public ResponseEntity<List<User>> getUsers() {
+    public ResponseEntity<List<UserDto>> getUsers() {
         return new ResponseEntity<>(userService.getUsers(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
+    public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
         return new ResponseEntity<>(userService.getUser(id), HttpStatus.OK);
     }
 
@@ -74,7 +75,7 @@ public class UserController {
 
     // Update
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody User user) {
         return new ResponseEntity<>(userService.updateUser(id, user), HttpStatus.OK);
     }
 
