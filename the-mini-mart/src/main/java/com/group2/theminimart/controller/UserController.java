@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.group2.theminimart.entity.CartContent;
 import com.group2.theminimart.entity.Rating;
 import com.group2.theminimart.entity.User;
+import com.group2.theminimart.service.CartContentService;
 import com.group2.theminimart.service.UserService;
 
 import jakarta.validation.Valid;
@@ -23,9 +25,11 @@ import jakarta.validation.Valid;
 @RequestMapping("/users")
 public class UserController {
     private UserService userService;
+    private CartContentService cartContentService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, CartContentService cartContentService) {
         this.userService = userService;
+        this.cartContentService = cartContentService;
     }
 
     // Create
@@ -39,6 +43,11 @@ public class UserController {
     public ResponseEntity<Rating> createProductRating(@PathVariable Long userId, @PathVariable Long productId,
             @RequestBody Rating rating) {
         return new ResponseEntity<>(userService.addProductRating(userId, productId, rating), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{userId}/cart")
+    public ResponseEntity<CartContent> createCartContent(@Valid @PathVariable Long userId, @Valid @RequestBody CartContent cartContent) {
+        return new ResponseEntity<>(cartContentService.createCartContent(userId, cartContent), HttpStatus.CREATED);
     }
 
     // Read
@@ -64,7 +73,6 @@ public class UserController {
     }
 
     // Update
-
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
         return new ResponseEntity<>(userService.updateUser(id, user), HttpStatus.OK);

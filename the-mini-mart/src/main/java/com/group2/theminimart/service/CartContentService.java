@@ -8,6 +8,8 @@ public interface CartContentService {
     // add business logic
     public CartContent createCartContent(CartContent cart);
 
+    public CartContent createCartContent(Long userId, CartContent cartContent);
+
     public ArrayList<CartContent> getCartContents();
 
     public CartContent getCartContent(Long id);
