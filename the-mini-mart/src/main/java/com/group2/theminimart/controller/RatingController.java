@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.group2.theminimart.dto.RatingDto;
 import com.group2.theminimart.entity.Rating;
 import com.group2.theminimart.service.RatingService;
 
@@ -29,13 +30,13 @@ public class RatingController {
 
   // Read
   @GetMapping
-  public ResponseEntity<List<Rating>> getRatings() {
+  public ResponseEntity<List<RatingDto>> getRatings() {
     return new ResponseEntity<>(ratingService.getRatings(), HttpStatus.OK);
   }
 
   // Update
   @PutMapping("/{id}")
-  public ResponseEntity<Rating> updateRating(@PathVariable Long id, @RequestBody Rating rating) {
+  public ResponseEntity<RatingDto> updateRating(@PathVariable Long id, @RequestBody Rating rating) {
     return new ResponseEntity<>(ratingService.updateRating(id, rating), HttpStatus.OK);
   }
 

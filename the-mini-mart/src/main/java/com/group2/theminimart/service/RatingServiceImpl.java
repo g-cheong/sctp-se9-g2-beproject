@@ -1,12 +1,15 @@
 package com.group2.theminimart.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import com.group2.theminimart.dto.RatingDto;
 import com.group2.theminimart.entity.Rating;
 import com.group2.theminimart.exception.RatingNotFoundException;
+import com.group2.theminimart.mapper.RatingMapper;
 import com.group2.theminimart.repository.RatingRepository;
 
 @Primary
@@ -20,21 +23,23 @@ public class RatingServiceImpl implements RatingService {
   }
 
   @Override
-  public List<Rating> getRatings() {
-    return ratingRepository.findAll();
+  public List<RatingDto> getRatings() {
+    List<Rating> allRating = ratingRepository.findAll();
+
+    return allRating.stream().map((rating) -> RatingMapper.RatingtoDto(rating)).collect(Collectors.toList());
   }
 
   @Override
-  public Rating getRating(Long id) {
-    return ratingRepository.findById(id).orElseThrow(() -> new RatingNotFoundException());
+  public RatingDto getRating(Long id) {
+    return RatingMapper.RatingtoDto(ratingRepository.findById(id).orElseThrow(() -> new RatingNotFoundException()));
   }
 
   @Override
-  public Rating updateRating(Long id, Rating rating) {
+  public RatingDto updateRating(Long id, Rating rating) {
     Rating updatedRating = ratingRepository.findById(id).orElseThrow(() -> new RatingNotFoundException());
     updatedRating.setRate(rating.getRate());
 
-    return ratingRepository.save(updatedRating);
+    return RatingMapper.RatingtoDto(ratingRepository.save(updatedRating));
 
   }
 
