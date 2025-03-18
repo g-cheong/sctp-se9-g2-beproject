@@ -31,7 +31,6 @@ public class Rating {
   private Long id;
 
   @Column
-  @NotBlank(message = "rating is required")
   private Double rate;
 
   @JsonIgnoreProperties("ratings")
