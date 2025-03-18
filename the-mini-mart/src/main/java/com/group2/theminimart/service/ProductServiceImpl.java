@@ -1,41 +1,82 @@
 package com.group2.theminimart.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.group2.theminimart.dto.ProductDto;
+import com.group2.theminimart.dto.ProductRatingDto;
 import com.group2.theminimart.entity.Product;
 import com.group2.theminimart.exception.ProductNotFoundException;
 import com.group2.theminimart.repository.ProductRepository;
+import com.group2.theminimart.repository.RatingRepository;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
     private ProductRepository productRepository;
+    private RatingRepository ratingRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, RatingRepository ratingRepository) {
         this.productRepository = productRepository;
+        this.ratingRepository = ratingRepository;
     }
 
     @Override
-    public Product createProduct(Product product) {
+    public ProductDto createProduct(Product product) {
         Product newProduct = productRepository.save(product);
-        return newProduct;
+        ProductDto productDto = new ProductDto();
+        ProductRatingDto productRatingDto = ratingRepository.findAverageRatingByProductId(newProduct.getId());
+        productDto.setId(newProduct.getId());
+        productDto.setTitle(newProduct.getTitle());
+        productDto.setPrice(newProduct.getPrice());
+        productDto.setDescription(newProduct.getDescription());
+        productDto.setCategory(newProduct.getCategory());
+        productDto.setImage(newProduct.getImage());
+        productDto.setRating(productRatingDto);
+        return productDto;
     }
 
     @Override
-    public Product getProduct(Long id) {
-        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
+    public ProductDto getProduct(Long id) {
+        return productRepository.findById(id)
+                .map(product -> {
+                    ProductDto productDto = new ProductDto();
+                    ProductRatingDto productRatingDto = ratingRepository.findAverageRatingByProductId(id);
+                    productDto.setId(product.getId());
+                    productDto.setTitle(product.getTitle());
+                    productDto.setPrice(product.getPrice());
+                    productDto.setDescription(product.getDescription());
+                    productDto.setCategory(product.getCategory());
+                    productDto.setImage(product.getImage());
+                    productDto.setRating(productRatingDto);
+                    return productDto;
+                })
+                .orElseThrow(() -> new ProductNotFoundException(id));
     }
 
     @Override
-    public List<Product> getAllProducts() {
+    public List<ProductDto> getAllProducts() {
         List<Product> allProducts = productRepository.findAll();
-        return allProducts;
+        List<ProductDto> productDtos = new ArrayList<>();
+        for (Product product : allProducts) {
+            ProductRatingDto productRatingDto = ratingRepository.findAverageRatingByProductId(product.getId());
+            ProductDto productDto = new ProductDto();
+            productDto.setId(product.getId());
+            productDto.setTitle(product.getTitle());
+            productDto.setPrice(product.getPrice());
+            productDto.setDescription(product.getDescription());
+            productDto.setCategory(product.getCategory());
+            productDto.setImage(product.getImage());
+            productDto.setRating(productRatingDto);
+            productDtos.add(productDto);
+        }
+        return productDtos;
     }
 
     @Override
-    public Product updateProduct(Long id, Product product) {
+    public ProductDto updateProduct(Long id, Product product) {
 
         Product productToUpdate = productRepository.findById(id).get();
         // update the product retrieved from the database.
@@ -45,7 +86,18 @@ public class ProductServiceImpl implements ProductService {
         productToUpdate.setCategory(product.getCategory());
         productToUpdate.setImage(product.getImage());
         // save the updated product back to the database.
-        return productRepository.save(productToUpdate);
+        Product updatedProduct = productRepository.save(productToUpdate);
+        // return the updated product dto.
+        ProductRatingDto productRatingDto = ratingRepository.findAverageRatingByProductId(updatedProduct.getId());
+        ProductDto productDto = new ProductDto();
+        productDto.setId(updatedProduct.getId());
+        productDto.setTitle(updatedProduct.getTitle());
+        productDto.setPrice(updatedProduct.getPrice());
+        productDto.setDescription(updatedProduct.getDescription());
+        productDto.setCategory(updatedProduct.getCategory());
+        productDto.setImage(updatedProduct.getImage());
+        productDto.setRating(productRatingDto);
+        return productDto;
     }
 
     @Override
@@ -54,9 +106,24 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> searchProducts(String title) {
-        List<Product> foundProducts = productRepository.findByTitleContainingIgnoreCase(title);
-        return foundProducts;
+    public List<ProductDto> searchProducts(String title, String description, String category) {
+        List<Product> foundProducts = productRepository.searchProducts(title, description, category);
+
+        List<ProductDto> productDtos = new ArrayList<>();
+        for (Product product : foundProducts) {
+            ProductRatingDto productRatingDto = ratingRepository.findAverageRatingByProductId(product.getId());
+            ProductDto productDto = new ProductDto();
+            productDto.setId(product.getId());
+            productDto.setTitle(product.getTitle());
+            productDto.setPrice(product.getPrice());
+            productDto.setDescription(product.getDescription());
+            productDto.setCategory(product.getCategory());
+            productDto.setImage(product.getImage());
+            productDto.setRating(productRatingDto);
+            productDtos.add(productDto);
+        }
+        return productDtos;
+
     }
 
 }

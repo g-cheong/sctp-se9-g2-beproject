@@ -2,19 +2,20 @@ package com.group2.theminimart.service;
 
 import java.util.List;
 
+import com.group2.theminimart.dto.ProductDto;
 import com.group2.theminimart.entity.Product;
 
 public interface ProductService {
 
-    Product createProduct(Product product);
+    ProductDto createProduct(Product product);
 
-    Product getProduct(Long id);
+    ProductDto getProduct(Long id);
 
-    List<Product> getAllProducts();
+    List<ProductDto> getAllProducts();
 
-    Product updateProduct(Long id, Product product);
+    ProductDto updateProduct(Long id, Product product);
 
     void deleteProduct(Long id);
 
-    List<Product> searchProducts(String title);
+    List<ProductDto> searchProducts(String title, String description, String category);
 }
