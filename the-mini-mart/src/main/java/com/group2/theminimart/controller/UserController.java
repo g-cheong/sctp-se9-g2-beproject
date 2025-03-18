@@ -47,7 +47,8 @@ public class UserController {
     }
 
     @PostMapping("/{userId}/cart")
-    public ResponseEntity<CartContent> createCartContent(@Valid @PathVariable Long userId, @Valid @RequestBody CartContent cartContent) {
+    public ResponseEntity<CartContent> createCartContent(@Valid @PathVariable Long userId,
+            @Valid @RequestBody CartContent cartContent) {
         return new ResponseEntity<>(cartContentService.createCartContent(userId, cartContent), HttpStatus.CREATED);
     }
 
@@ -76,7 +77,7 @@ public class UserController {
     // Update
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody User user) {
-        return new ResponseEntity<>(userService.updateUser(id, user), HttpStatus.OK);
+        return new ResponseEntity<>(userService.updateUserPassword(id, user), HttpStatus.OK);
     }
 
     @PutMapping("/{userId}/products/{productId}/ratings")

@@ -31,10 +31,13 @@ public class DataLoader {
 
   @PostConstruct
   public void loadData() {
+
     // CREATE USER
     User firhat = userRepository.save(User.builder().username("firhat").password("12345678").build());
     User min = userRepository.save(User.builder().username("min").password("12345678").build());
+    @SuppressWarnings("unused")
     User gab = userRepository.save(User.builder().username("gab").password("12345678").build());
+
     // CREATE PRODUCT
     Product product1 = productRepository.save(
         Product.builder()
@@ -45,13 +48,15 @@ public class DataLoader {
             .category("men's clothing")
             .image("https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg")
             .build());
+
     // CREATE RATING
-    // Rating rating1 =
-    ratingRepository.save(Rating.builder().rate(4.0).product(product1).user(firhat).build());
-    // Rating rating2 =
-    ratingRepository.save(Rating.builder().rate(3.0).product(product1).user(min).build());
+    @SuppressWarnings("unused")
+    Rating rating1 = ratingRepository.save(Rating.builder().rate(4.0).product(product1).user(firhat).build());
+    @SuppressWarnings("unused")
+    Rating rating2 = ratingRepository.save(Rating.builder().rate(3.0).product(product1).user(min).build());
     // Rating rating3 =
-    ratingRepository.save(Rating.builder().rate(5.0).product(product1).user(gab).build());
+    // ratingRepository.save(Rating.builder().rate(5.0).product(product1).user(gab).build());
+
     // CREATE CART
     // CartContent cart1 =
     cartContentRepository

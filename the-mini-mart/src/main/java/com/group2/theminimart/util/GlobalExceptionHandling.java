@@ -6,8 +6,11 @@ import java.util.List;
 import com.group2.theminimart.dto.ErrorResponse;
 import com.group2.theminimart.exception.CartNotFoundException;
 import com.group2.theminimart.exception.ProductNotFoundException;
+import com.group2.theminimart.exception.RatingAlreadyExistException;
 import com.group2.theminimart.exception.RatingNotFoundException;
+import com.group2.theminimart.exception.UserAlreadyExistException;
 import com.group2.theminimart.exception.UserNotFoundException;
+import com.group2.theminimart.exception.WrongUserException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,16 +23,27 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandling {
-  // TODO add logging using SL4J
+
   private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandling.class);
-  
-  @ExceptionHandler({CartNotFoundException.class, ProductNotFoundException.class, RatingNotFoundException.class, UserNotFoundException.class})
+
+  // 404 Resource not found
+  @ExceptionHandler({ CartNotFoundException.class, ProductNotFoundException.class, RatingNotFoundException.class,
+      UserNotFoundException.class })
   public ResponseEntity<ErrorResponse> handleNotFoundException(Exception e) {
-    logger.error("🔴 " +  HttpStatus.NOT_FOUND + " " + e);
+    logger.error("🔴 " + HttpStatus.NOT_FOUND + " " + e);
     ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), LocalDateTime.now());
     return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
   }
-  
+
+  // 400 Bad Request
+  @ExceptionHandler({ WrongUserException.class, UserAlreadyExistException.class, RatingAlreadyExistException.class })
+  public ResponseEntity<ErrorResponse> handleBadRequestException(Exception e) {
+    logger.error("🔴 " + HttpStatus.BAD_REQUEST + " " + e);
+    ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), LocalDateTime.now());
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  // 400 Validation Exception
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorResponse> handleNotValidException(MethodArgumentNotValidException e) {
     // Get a list of all validation errors from the exception object
@@ -38,15 +52,14 @@ public class GlobalExceptionHandling {
     StringBuilder sb = new StringBuilder();
     // Loop through all the errors and append the error messages
     for (ObjectError error : validationErrors) {
-      sb.append(error.getDefaultMessage() + ". "); 
+      sb.append(error.getDefaultMessage() + ". ");
     }
-    logger.error("🔴 " +  HttpStatus.BAD_REQUEST + " " + sb);
+    logger.error("🔴 " + HttpStatus.BAD_REQUEST + " " + sb);
     ErrorResponse errorResponse = new ErrorResponse(sb.toString(), LocalDateTime.now());
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
   }
 
-
-  // Handle general exceptions
+  // Handle General Exceptions
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleException(Exception e) {
     // log exception, logger.error..

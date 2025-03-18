@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,13 +25,13 @@ import lombok.NoArgsConstructor;
 @Table(name = "ratings", uniqueConstraints = {
     @UniqueConstraint(name = "UniqueUserAndProduct", columnNames = { "userId", "productId" }) })
 public class Rating {
-  // TODO to implement validation
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column
   private Long id;
 
   @Column
+  @NotBlank(message = "rating is required")
   private Double rate;
 
   @JsonIgnoreProperties("ratings")
