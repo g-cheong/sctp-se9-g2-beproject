@@ -75,5 +75,4 @@ public class DataLoader {
     cartContentRepository
         .save(CartContent.builder().product(product2).user(gab).count(1).total(109.95).build());
   }
-
-}
+} 
