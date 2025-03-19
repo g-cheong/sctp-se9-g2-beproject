@@ -93,11 +93,11 @@ public class CartContentServiceImpl implements CartContentService {
     }
 
     @Override
-    public CartDto updateCartContent(Long userId, CartDto cartDto) {
+    public CartDto updateCartContent(Long userId, Long productId, CartDto cartDto) {
         CartContent exisitingCartContent = cartContentRepository
-            .findByUserIdAndProductId(userId, cartDto.getProductId())
+            .findByUserIdAndProductId(userId, productId)
             .orElseThrow(() -> 
-                new CartContentNotFoundException(userId, cartDto.getProductId()));
+                new CartContentNotFoundException(userId, productId));
         exisitingCartContent.setCount(cartDto.getCount());
         exisitingCartContent.setTotal(cartDto.getTotal());
         return CartMapper.toDto(cartContentRepository.save(exisitingCartContent));
@@ -106,13 +106,12 @@ public class CartContentServiceImpl implements CartContentService {
     @Override
     public void deleteCart(Long userId) {
         List<CartContent> cart = cartContentRepository.findByUserId(userId).orElseThrow(() -> new UserNotFoundException(userId));
-
         cartContentRepository.deleteAll(cart);
     }
 
     @Override
     public void deleteCartContent(Long userId, Long productId) {
-        CartContent removeCartContent = cartContentRepository.findByUserIdAndProductId(userId, productId).orElseThrow(() -> new CartContentNotFoundException(userId, productId));
-        cartContentRepository.delete(removeCartContent);
+        CartContent cartContent = cartContentRepository.findByUserIdAndProductId(userId, productId).orElseThrow(() -> new CartContentNotFoundException(userId, productId));
+        cartContentRepository.delete(cartContent);
     }
 }

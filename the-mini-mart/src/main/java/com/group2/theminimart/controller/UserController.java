@@ -98,7 +98,7 @@ public class UserController {
 
     @PutMapping("/{userId}/cart/{productId}")
     public ResponseEntity<CartDto> updateCartContent(@Valid @PathVariable Long userId, @Valid @PathVariable Long productId, @Valid @RequestBody CartDto cartDto) {
-        return new ResponseEntity<>(cartContentService.updateCartContent(userId, cartDto), HttpStatus.OK);
+        return new ResponseEntity<>(cartContentService.updateCartContent(userId, productId, cartDto), HttpStatus.OK);
     }
 
     // Delete

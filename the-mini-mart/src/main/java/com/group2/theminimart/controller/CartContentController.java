@@ -47,7 +47,7 @@ public class CartContentController {
     // update
     @PutMapping("/{id}")
     public ResponseEntity<CartDto> updateCartContent(@PathVariable Long id, @Valid @RequestBody CartDto cartDto) {
-        return new ResponseEntity<>(cartContentService.updateCartContent(id, cartDto), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(cartContentService.updateCartContent(id, 1L, cartDto), HttpStatus.ACCEPTED);
     }
 
     //delete

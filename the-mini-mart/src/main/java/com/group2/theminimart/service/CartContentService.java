@@ -17,7 +17,7 @@ public interface CartContentService {
 
     public List<CartDto> updateCart(Long userId, List<CartDto> cartDtoList);
 
-    public CartDto updateCartContent(Long userId, CartDto cartDto);
+    public CartDto updateCartContent(Long userId, Long productId, CartDto cartDto);
 
     public void deleteCart(Long userId);
 
