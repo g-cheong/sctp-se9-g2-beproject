@@ -1,6 +1,5 @@
 package com.group2.theminimart.controller;
 
-import java.util.ArrayList;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.group2.theminimart.dto.CartDto;
 import com.group2.theminimart.entity.CartContent;
 import com.group2.theminimart.service.CartContentService;
 import jakarta.validation.Valid;
@@ -34,20 +34,20 @@ public class CartContentController {
     }
 
     // read
-    @GetMapping
-    public ResponseEntity<ArrayList<CartContent>> getCartContents() {
-        return new ResponseEntity<>(cartContentService.getCartContents(), HttpStatus.OK);
-    }
+    // @GetMapping
+    // public ResponseEntity<ArrayList<CartContent>> getCartContents() {
+    //     return new ResponseEntity<>(cartContentService.getCartContents(), HttpStatus.OK);
+    // }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CartContent> getCartContent(@PathVariable Long id) {
-        return new ResponseEntity<>(cartContentService.getCartContent(id), HttpStatus.OK);
+    public ResponseEntity<CartDto> getCartContent(@PathVariable Long userId) {
+        return new ResponseEntity<>(cartContentService.getCartContent(userId), HttpStatus.OK);
     }
 
     // update
     @PutMapping("/{id}")
-    public ResponseEntity<CartContent> updateCartContent(@PathVariable Long id, @Valid @RequestBody CartContent cartContent) {
-        return new ResponseEntity<>(cartContentService.updateCartContent(id, cartContent), HttpStatus.ACCEPTED);
+    public ResponseEntity<CartDto> updateCartContent(@PathVariable Long id, @Valid @RequestBody CartDto cartDto) {
+        return new ResponseEntity<>(cartContentService.updateCartContent(id, cartDto), HttpStatus.ACCEPTED);
     }
 
     //delete

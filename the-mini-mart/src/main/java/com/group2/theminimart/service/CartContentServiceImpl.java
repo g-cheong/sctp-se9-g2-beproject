@@ -1,26 +1,38 @@
 package com.group2.theminimart.service;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+
+import com.group2.theminimart.dto.CartDto;
 import com.group2.theminimart.entity.CartContent;
+import com.group2.theminimart.entity.Product;
 import com.group2.theminimart.entity.User;
+import com.group2.theminimart.exception.CartContentAlreadyExistException;
+import com.group2.theminimart.exception.CartContentNotFoundException;
 import com.group2.theminimart.exception.CartNotFoundException;
+import com.group2.theminimart.exception.ProductNotFoundException;
 import com.group2.theminimart.exception.UserNotFoundException;
+import com.group2.theminimart.mapper.CartMapper;
 import com.group2.theminimart.repository.CartContentRepository;
+import com.group2.theminimart.repository.ProductRepository;
 import com.group2.theminimart.repository.UserRepository;
 
 
 @Primary
 @Service
 public class CartContentServiceImpl implements CartContentService {
+
+    private  ProductRepository productRepository;
     private CartContentRepository cartContentRepository;
     private UserRepository userRepository;
 
-    public CartContentServiceImpl(CartContentRepository cartContentRepository, UserRepository userRepository) {
+    public CartContentServiceImpl(CartContentRepository cartContentRepository, UserRepository userRepository, ProductRepository productRepository) {
         this.cartContentRepository = cartContentRepository;
         this.userRepository = userRepository;
+        this.productRepository = productRepository;
     }
 
     @Override
@@ -29,32 +41,78 @@ public class CartContentServiceImpl implements CartContentService {
     }
 
     @Override
-    public CartContent createCartContent(Long userId, CartContent cartContent) {
+    public CartDto createCartContent(Long userId, CartDto cartDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-        cartContent.setUser(user);
-        return cartContentRepository.save(cartContent);
+        Product product = productRepository.findById(cartDto.getProductId()).orElseThrow(() -> new ProductNotFoundException(cartDto.getProductId()));
+        if(cartContentRepository.findByUserIdAndProductId(userId, product.getId()).isPresent()) {
+            throw new CartContentAlreadyExistException(userId, product.getId());
+        }
+        return CartMapper.toDto(cartContentRepository.save( CartMapper.fromDto(cartDto, user, product)));
+    }   
+
+    @Override
+    public List<CartDto> getCartContents(Long userId) {
+        List<CartContent> cart = 
+            cartContentRepository
+                .findByUserId(userId)
+                .orElseThrow(() ->  new UserNotFoundException(userId));
+        return cart
+                .stream()
+                .map(CartMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public ArrayList<CartContent> getCartContents() {
-        return (ArrayList<CartContent>) cartContentRepository.findAll();
+    public CartDto getCartContent(Long userId) {
+        return CartMapper.toDto(cartContentRepository.findById(userId).orElseThrow(() -> new CartNotFoundException(userId)));
     }
 
     @Override
-    public CartContent getCartContent(Long id) {
-        return cartContentRepository.findById(id).orElseThrow(() -> new CartNotFoundException(id));
+    public List<CartDto> updateCart(Long userId, List<CartDto> cartDtoList) {
+        List<CartContent> userCart = cartContentRepository.findByUserId(userId).orElseThrow(() -> new UserNotFoundException(userId));
+
+        List<CartContent> updatedCart = userCart
+            .stream()
+            .map(existingCartContent -> {
+                CartDto cartDto = cartDtoList.stream()
+                        .filter(dto -> dto.getProductId().equals(existingCartContent.getProduct().getId()))
+                        .findFirst()
+                        .orElseThrow(() -> new CartContentNotFoundException(userId, existingCartContent.getProduct().getId()));
+
+                existingCartContent.setCount(cartDto.getCount());
+                existingCartContent.setTotal(cartDto.getTotal());
+
+                return cartContentRepository.save(existingCartContent);
+            })
+            .collect(Collectors.toList());
+
+        return updatedCart
+            .stream()
+            .map(CartMapper::toDto)
+            .collect(Collectors.toList());
     }
 
     @Override
-    public CartContent updateCartContent(Long id, CartContent cartContent) {
-        CartContent updatedCartContent = cartContentRepository.findById(id).orElseThrow(() ->  new CartNotFoundException(id));
-        updatedCartContent.setCount(cartContent.getCount());
-        updatedCartContent.setTotal(cartContent.getTotal());
-        return cartContentRepository.save(updatedCartContent);
+    public CartDto updateCartContent(Long userId, CartDto cartDto) {
+        CartContent exisitingCartContent = cartContentRepository
+            .findByUserIdAndProductId(userId, cartDto.getProductId())
+            .orElseThrow(() -> 
+                new CartContentNotFoundException(userId, cartDto.getProductId()));
+        exisitingCartContent.setCount(cartDto.getCount());
+        exisitingCartContent.setTotal(cartDto.getTotal());
+        return CartMapper.toDto(cartContentRepository.save(exisitingCartContent));
     }
 
     @Override
-    public void deleteCartContent(Long id) {
-        cartContentRepository.deleteById(id);
+    public void deleteCart(Long userId) {
+        List<CartContent> cart = cartContentRepository.findByUserId(userId).orElseThrow(() -> new UserNotFoundException(userId));
+
+        cartContentRepository.deleteAll(cart);
+    }
+
+    @Override
+    public void deleteCartContent(Long userId, Long productId) {
+        CartContent removeCartContent = cartContentRepository.findByUserIdAndProductId(userId, productId).orElseThrow(() -> new CartContentNotFoundException(userId, productId));
+        cartContentRepository.delete(removeCartContent);
     }
 }

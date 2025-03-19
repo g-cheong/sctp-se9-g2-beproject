@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.group2.theminimart.entity.CartContent;
+import com.group2.theminimart.dto.CartDto;
 import com.group2.theminimart.dto.UserDto;
 import com.group2.theminimart.entity.Rating;
 import com.group2.theminimart.entity.User;
@@ -47,9 +47,9 @@ public class UserController {
     }
 
     @PostMapping("/{userId}/cart")
-    public ResponseEntity<CartContent> createCartContent(@Valid @PathVariable Long userId,
-            @Valid @RequestBody CartContent cartContent) {
-        return new ResponseEntity<>(cartContentService.createCartContent(userId, cartContent), HttpStatus.CREATED);
+    public ResponseEntity<CartDto> createCartContent(@Valid @PathVariable Long userId,
+            @Valid @RequestBody CartDto cartDto) {
+        return new ResponseEntity<>(cartContentService.createCartContent(userId, cartDto), HttpStatus.CREATED);
     }
 
     // Read
@@ -74,6 +74,11 @@ public class UserController {
         return new ResponseEntity<>(userService.getUserRatingByProductId(id, productId), HttpStatus.OK);
     }
 
+    @GetMapping("/{userId}/cart")
+    public ResponseEntity<List<CartDto>> getUserCart(@Valid @PathVariable Long userId) {
+        return new ResponseEntity<>(cartContentService.getCartContents(userId), HttpStatus.OK);
+    }
+
     // Update
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody User user) {
@@ -84,6 +89,16 @@ public class UserController {
     public ResponseEntity<Rating> updateProductRating(@PathVariable Long userId, @PathVariable Long productId,
             @RequestBody Rating rating) {
         return new ResponseEntity<>(userService.updateProductRating(userId, productId, rating), HttpStatus.OK);
+    }
+
+    @PutMapping("/{userId}/cart")
+    public ResponseEntity<List<CartDto>> updateCart(@Valid @PathVariable Long userId, @Valid @RequestBody List<CartDto> cartDtoList) {
+        return new ResponseEntity<>(cartContentService.updateCart(userId, cartDtoList), HttpStatus.OK);
+    }
+
+    @PutMapping("/{userId}/cart/{productId}")
+    public ResponseEntity<CartDto> updateCartContent(@Valid @PathVariable Long userId, @Valid @PathVariable Long productId, @Valid @RequestBody CartDto cartDto) {
+        return new ResponseEntity<>(cartContentService.updateCartContent(userId, cartDto), HttpStatus.OK);
     }
 
     // Delete
@@ -100,4 +115,14 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @DeleteMapping("/{userId}/cart")
+    public ResponseEntity<HttpStatus> deleteCart(@Valid @PathVariable Long userId) {
+        cartContentService.deleteCart(userId);
+        return new ResponseEntity<>(HttpStatus.OK);   
+    }
+    @DeleteMapping("/{userId}/cart/{productId}")
+    public ResponseEntity<HttpStatus> deleteCartContent(@Valid @PathVariable Long userId, @Valid @PathVariable Long productId) {
+        cartContentService.deleteCartContent(userId, productId);
+        return new ResponseEntity<>(HttpStatus.OK);   
+    }
 }

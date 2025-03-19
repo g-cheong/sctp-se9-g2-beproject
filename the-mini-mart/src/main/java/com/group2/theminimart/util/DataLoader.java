@@ -39,6 +39,7 @@ public class DataLoader {
     User gab = userRepository.save(User.builder().username("gab").password("12345678").build());
 
     // CREATE PRODUCT
+    
     Product product1 = productRepository.save(
         Product.builder()
             .title("Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops")
@@ -48,7 +49,15 @@ public class DataLoader {
             .category("men's clothing")
             .image("https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg")
             .build());
-
+    Product product2 = productRepository.save(
+        Product.builder()
+            .title("Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops")
+            .price(109.95)
+            .description(
+                "Your perfect pack for everyday use and walks in the forest. Stash your laptop (up to 15 inches) in the padded sleeve, your everyday")
+            .category("men's clothing")
+            .image("https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg")
+            .build());
     // CREATE RATING
     @SuppressWarnings("unused")
     Rating rating1 = ratingRepository.save(Rating.builder().rate(4.0).product(product1).user(firhat).build());
@@ -61,6 +70,10 @@ public class DataLoader {
     // CartContent cart1 =
     cartContentRepository
         .save(CartContent.builder().product(product1).user(firhat).count(1).total(109.95).build());
+    cartContentRepository
+        .save(CartContent.builder().product(product1).user(gab).count(1).total(109.95).build());
+    cartContentRepository
+        .save(CartContent.builder().product(product2).user(gab).count(1).total(109.95).build());
   }
 
 }

@@ -1,20 +1,25 @@
 package com.group2.theminimart.service;
 
-import java.util.ArrayList;
+import java.util.List;
 
+import com.group2.theminimart.dto.CartDto;
 import com.group2.theminimart.entity.CartContent;
 
 public interface CartContentService {
     // add business logic
     public CartContent createCartContent(CartContent cart);
 
-    public CartContent createCartContent(Long userId, CartContent cartContent);
+    public CartDto createCartContent(Long userId, CartDto cartDto);
 
-    public ArrayList<CartContent> getCartContents();
+    public List<CartDto> getCartContents(Long userId);
 
-    public CartContent getCartContent(Long id);
+    public CartDto getCartContent(Long userId);
 
-    public CartContent updateCartContent(Long id, CartContent cartContent);
+    public List<CartDto> updateCart(Long userId, List<CartDto> cartDtoList);
 
-    public void deleteCartContent(Long id);
+    public CartDto updateCartContent(Long userId, CartDto cartDto);
+
+    public void deleteCart(Long userId);
+
+    public void deleteCartContent(Long userId, Long productId);
 }

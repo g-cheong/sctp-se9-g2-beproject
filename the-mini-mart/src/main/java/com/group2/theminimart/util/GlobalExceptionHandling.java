@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.group2.theminimart.dto.ErrorResponse;
+import com.group2.theminimart.exception.CartContentAlreadyExistException;
 import com.group2.theminimart.exception.CartNotFoundException;
 import com.group2.theminimart.exception.ProductNotFoundException;
 import com.group2.theminimart.exception.RatingAlreadyExistException;
@@ -57,6 +58,13 @@ public class GlobalExceptionHandling {
     logger.error("🔴 " + HttpStatus.BAD_REQUEST + " " + sb);
     ErrorResponse errorResponse = new ErrorResponse(sb.toString(), LocalDateTime.now());
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(CartContentAlreadyExistException.class)
+  public ResponseEntity<ErrorResponse> handleConflitError(CartContentAlreadyExistException e) {
+    logger.error("🔴 " + HttpStatus.CONFLICT + " " + e.getMessage());
+    ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), LocalDateTime.now());
+    return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
   }
 
   // Handle General Exceptions
