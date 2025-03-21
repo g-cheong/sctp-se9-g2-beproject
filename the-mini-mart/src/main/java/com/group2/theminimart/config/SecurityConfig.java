@@ -27,9 +27,9 @@ public class SecurityConfig {
         .csrf(csrf -> csrf.disable())
         .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests((requests) -> requests
-            .requestMatchers("/users/**", "/cart/**").authenticated()
-            .requestMatchers(HttpMethod.POST, "/products/**").authenticated()
-            .requestMatchers(HttpMethod.DELETE, "/products/**").authenticated()
+            .requestMatchers("api/users/**", "api/cart/**").authenticated()
+            .requestMatchers(HttpMethod.POST, "api/products/**").authenticated()
+            .requestMatchers(HttpMethod.DELETE, "api/products/**").authenticated()
             .anyRequest().permitAll());
     return http.build();
   }
