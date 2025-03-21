@@ -42,6 +42,9 @@ public class User {
     @NotBlank(message = "Password is required")
     private String password;
 
+    @Column
+    private String role;
+
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Rating> ratings;

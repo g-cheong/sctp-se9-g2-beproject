@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.group2.theminimart.dto.CartDto;
-import com.group2.theminimart.dto.UserDto;
+import com.group2.theminimart.dto.UserResponseDto;
 import com.group2.theminimart.entity.Rating;
 import com.group2.theminimart.entity.User;
 import com.group2.theminimart.service.CartContentService;
@@ -34,16 +34,16 @@ public class UserController {
     }
 
     // Create
-
-    @PostMapping
-    public ResponseEntity<UserDto> createUser(@Valid @RequestBody User user) {
-        return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
-    }
-
     @PostMapping("/{userId}/products/{productId}/ratings")
-    public ResponseEntity<Rating> createProductRating(@PathVariable Long userId, @PathVariable Long productId,
+    public ResponseEntity<Rating> createProductRating(@PathVariable Long userId,
+            @PathVariable Long productId,
             @RequestBody Rating rating) {
-        return new ResponseEntity<>(userService.addProductRating(userId, productId, rating), HttpStatus.CREATED);
+        // TODO: Use SecurityContext to CRUD ratings by getting username and remove the
+        // userId from PathVariable
+        // String username
+        // = SecurityContextHolder.getContext().getAuthentication().getName();
+        return new ResponseEntity<>(userService.addProductRating(userId, productId,
+                rating), HttpStatus.CREATED);
     }
 
     @PostMapping("/{userId}/cart")
@@ -55,12 +55,12 @@ public class UserController {
     // Read
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> getUsers() {
+    public ResponseEntity<List<UserResponseDto>> getUsers() {
         return new ResponseEntity<>(userService.getUsers(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDto> getUser(@PathVariable Long id) {
         return new ResponseEntity<>(userService.getUser(id), HttpStatus.OK);
     }
 
@@ -81,7 +81,7 @@ public class UserController {
 
     // Update
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @RequestBody User user) {
         return new ResponseEntity<>(userService.updateUserPassword(id, user), HttpStatus.OK);
     }
 
@@ -92,12 +92,14 @@ public class UserController {
     }
 
     @PutMapping("/{userId}/cart")
-    public ResponseEntity<List<CartDto>> updateCart(@Valid @PathVariable Long userId, @Valid @RequestBody List<CartDto> cartDtoList) {
+    public ResponseEntity<List<CartDto>> updateCart(@Valid @PathVariable Long userId,
+            @Valid @RequestBody List<CartDto> cartDtoList) {
         return new ResponseEntity<>(cartContentService.updateCart(userId, cartDtoList), HttpStatus.OK);
     }
 
     @PutMapping("/{userId}/cart/{productId}")
-    public ResponseEntity<CartDto> updateCartContent(@Valid @PathVariable Long userId, @Valid @PathVariable Long productId, @Valid @RequestBody CartDto cartDto) {
+    public ResponseEntity<CartDto> updateCartContent(@Valid @PathVariable Long userId,
+            @Valid @PathVariable Long productId, @Valid @RequestBody CartDto cartDto) {
         return new ResponseEntity<>(cartContentService.updateCartContent(userId, productId, cartDto), HttpStatus.OK);
     }
 
@@ -118,11 +120,13 @@ public class UserController {
     @DeleteMapping("/{userId}/cart")
     public ResponseEntity<HttpStatus> deleteCart(@Valid @PathVariable Long userId) {
         cartContentService.deleteCart(userId);
-        return new ResponseEntity<>(HttpStatus.OK);   
+        return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @DeleteMapping("/{userId}/cart/{productId}")
-    public ResponseEntity<HttpStatus> deleteCartContent(@Valid @PathVariable Long userId, @Valid @PathVariable Long productId) {
+    public ResponseEntity<HttpStatus> deleteCartContent(@Valid @PathVariable Long userId,
+            @Valid @PathVariable Long productId) {
         cartContentService.deleteCartContent(userId, productId);
-        return new ResponseEntity<>(HttpStatus.OK);   
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
