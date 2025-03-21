@@ -1,12 +1,21 @@
 package com.group2.theminimart.service;
 
+import java.nio.CharBuffer;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Primary;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.group2.theminimart.config.UserAuthenticationProvider;
 import com.group2.theminimart.controller.CartContentController;
-import com.group2.theminimart.dto.UserDto;
+import com.group2.theminimart.dto.UserLoginRequestDto;
+import com.group2.theminimart.dto.UserRegisterRequestDto;
+import com.group2.theminimart.dto.UserResponseDto;
+import com.group2.theminimart.dto.UserWithTokenResponseDto;
 import com.group2.theminimart.entity.Product;
 import com.group2.theminimart.entity.Rating;
 import com.group2.theminimart.entity.User;
@@ -15,6 +24,7 @@ import com.group2.theminimart.exception.RatingAlreadyExistException;
 import com.group2.theminimart.exception.RatingNotFoundException;
 import com.group2.theminimart.exception.UserAlreadyExistException;
 import com.group2.theminimart.exception.UserNotFoundException;
+import com.group2.theminimart.exception.UserWrongLoginDetailsException;
 import com.group2.theminimart.exception.WrongUserException;
 import com.group2.theminimart.mapper.UserMapper;
 import com.group2.theminimart.repository.CartContentRepository;
@@ -22,8 +32,11 @@ import com.group2.theminimart.repository.ProductRepository;
 import com.group2.theminimart.repository.RatingRepository;
 import com.group2.theminimart.repository.UserRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Primary
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     // TODO to implement validation
@@ -31,39 +44,78 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     private RatingRepository ratingRepository;
     private ProductRepository productRepository;
+    private final PasswordEncoder passwordEncoder;
+    private UserAuthenticationProvider userAuthenticationProvider;
 
     public UserServiceImpl(UserRepository userRepository, RatingRepository ratingRepository,
             ProductRepository productRepository, CartContentController cartContentController,
-            CartContentRepository cartContentRepository, CartContentServiceImpl cartContentServiceImpl) {
+            CartContentRepository cartContentRepository, CartContentServiceImpl cartContentServiceImpl,
+            PasswordEncoder passwordEncoder, UserAuthenticationProvider userAuthenticationProvider) {
         this.userRepository = userRepository;
         this.ratingRepository = ratingRepository;
         this.productRepository = productRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.userAuthenticationProvider = userAuthenticationProvider;
     }
 
+    // @Override
+    // public UserResponseDto createUser(User user) {
+    // // if username exist throw UserAlreadyExistException else create user
+    // if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+    // throw new UserAlreadyExistException();
+    // }
+
+    // return UserMapper.usertoUserResponseDto(userRepository.save(user));
+    // }
+
     @Override
-    public UserDto createUser(User user) {
-        // if username exist throw UserAlreadyExistException else create user
-        if (userRepository.findByUsernameIgnoringCase(user.getUsername()).isPresent()) {
+    public UserResponseDto registerUser(UserRegisterRequestDto userRegisterDto) {
+
+        // check if username in database and throws error if does
+        Optional<User> userInDb = userRepository.findByUsername(userRegisterDto.getUsername());
+
+        if (userInDb.isPresent()) {
             throw new UserAlreadyExistException();
         }
-        return UserMapper.UsertoDto(userRepository.save(user));
+
+        User user = UserMapper.userRegisterDtoToUser(userRegisterDto);
+
+        user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userRegisterDto.getPassword())));
+
+        User savedUser = userRepository.save(user);
+
+        return UserMapper.usertoUserResponseDto(savedUser);
     }
 
     @Override
-    public List<UserDto> getUsers() {
+    public UserWithTokenResponseDto loginUser(UserLoginRequestDto userLoginRequestDto) {
+        User user = userRepository.findByUsername(userLoginRequestDto.getUsername())
+                .orElseThrow(() -> new UserWrongLoginDetailsException());
+
+        if (passwordEncoder.matches(CharBuffer.wrap(userLoginRequestDto.getPassword()), user.getPassword())) {
+            UserWithTokenResponseDto userWithToken = UserMapper.userToUserWithTokenDto(user);
+            userWithToken.setToken(userAuthenticationProvider.createToken(user.getUsername()));
+            return userWithToken;
+        }
+        throw new UserWrongLoginDetailsException();
+    };
+
+    @Override
+    public List<UserResponseDto> getUsers() {
+        log.info("User is :" + SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         List<User> allUser = userRepository.findAll();
 
-        return allUser.stream().map((user) -> UserMapper.UsertoDto(user)).collect(Collectors.toList());
+        return allUser.stream().map((user) -> UserMapper.usertoUserResponseDto(user)).collect(Collectors.toList());
     }
 
     @Override
-    public UserDto getUser(Long id) {
-        return UserMapper.UsertoDto(userRepository.findById(id)
+    public UserResponseDto getUser(Long id) {
+        return UserMapper.usertoUserResponseDto(userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id)));
     }
 
     @Override
-    public UserDto updateUserPassword(Long id, User user) {
+    public UserResponseDto updateUserPassword(Long id, User user) {
         // find user else throw UserNotFoundException
         // check username else throw WrongUserException
         // change password
@@ -72,7 +124,7 @@ public class UserServiceImpl implements UserService {
             throw new WrongUserException(id);
         }
         updatedUsers.setPassword(user.getPassword());
-        return UserMapper.UsertoDto(userRepository.save(updatedUsers));
+        return UserMapper.usertoUserResponseDto(userRepository.save(updatedUsers));
     }
 
     @Override
@@ -95,6 +147,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Rating addProductRating(Long userId, Long productId, Rating rating) {
+
+        // String username =
+        // SecurityContextHolder.getContext().getAuthentication().getName();
 
         // check if userid and productid exist
         User existingUser = userRepository.findById(userId)
@@ -131,4 +186,5 @@ public class UserServiceImpl implements UserService {
 
         ratingRepository.delete(existingRating);
     }
+
 }

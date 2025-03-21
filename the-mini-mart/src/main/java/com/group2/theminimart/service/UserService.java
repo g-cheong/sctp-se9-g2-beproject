@@ -2,18 +2,27 @@ package com.group2.theminimart.service;
 
 import java.util.List;
 
-import com.group2.theminimart.dto.UserDto;
+import com.group2.theminimart.dto.UserLoginRequestDto;
+import com.group2.theminimart.dto.UserRegisterRequestDto;
+import com.group2.theminimart.dto.UserResponseDto;
+import com.group2.theminimart.dto.UserWithTokenResponseDto;
 import com.group2.theminimart.entity.Rating;
 import com.group2.theminimart.entity.User;
 
 public interface UserService {
-    public UserDto createUser(User User);
+    // register
+    public UserResponseDto registerUser(UserRegisterRequestDto userRegisterDto);
 
-    public List<UserDto> getUsers();
+    // login
+    public UserWithTokenResponseDto loginUser(UserLoginRequestDto userLoginRequestDto);
 
-    public UserDto getUser(Long id);
+    // public UserResponseDto createUser(User User);
 
-    public UserDto updateUserPassword(Long id, User User);
+    public List<UserResponseDto> getUsers();
+
+    public UserResponseDto getUser(Long id);
+
+    public UserResponseDto updateUserPassword(Long id, User User);
 
     public void deleteUser(Long id);
 
