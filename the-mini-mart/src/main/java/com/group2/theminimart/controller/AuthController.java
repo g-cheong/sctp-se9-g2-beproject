@@ -16,7 +16,7 @@ import com.group2.theminimart.service.UserService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("api/auth")
 public class AuthController {
 
   private UserService userService;

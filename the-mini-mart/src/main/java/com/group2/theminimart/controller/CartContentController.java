@@ -1,6 +1,5 @@
 package com.group2.theminimart.controller;
 
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,9 +16,8 @@ import com.group2.theminimart.entity.CartContent;
 import com.group2.theminimart.service.CartContentService;
 import jakarta.validation.Valid;
 
-
 @RestController
-@RequestMapping("/cart")
+@RequestMapping("api/cart")
 public class CartContentController {
     private CartContentService cartContentService;
 
@@ -27,7 +25,7 @@ public class CartContentController {
         this.cartContentService = cartContentService;
     };
 
-    // create 
+    // create
     @PostMapping
     public ResponseEntity<CartContent> createCartContent(@Valid @RequestBody CartContent cartContent) {
         return new ResponseEntity<>(cartContentService.createCartContent(cartContent), HttpStatus.ACCEPTED);
@@ -36,7 +34,8 @@ public class CartContentController {
     // read
     // @GetMapping
     // public ResponseEntity<ArrayList<CartContent>> getCartContents() {
-    //     return new ResponseEntity<>(cartContentService.getCartContents(), HttpStatus.OK);
+    // return new ResponseEntity<>(cartContentService.getCartContents(),
+    // HttpStatus.OK);
     // }
 
     @GetMapping("/{id}")
@@ -50,7 +49,7 @@ public class CartContentController {
         return new ResponseEntity<>(cartContentService.updateCartContent(id, 1L, cartDto), HttpStatus.ACCEPTED);
     }
 
-    //delete
+    // delete
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteCart(@PathVariable Long id) {
         return new ResponseEntity<>(HttpStatus.OK);

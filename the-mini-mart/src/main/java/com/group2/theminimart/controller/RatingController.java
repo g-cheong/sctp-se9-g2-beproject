@@ -19,7 +19,7 @@ import com.group2.theminimart.service.RatingService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/ratings")
+@RequestMapping("api/ratings")
 public class RatingController {
 
   private RatingService ratingService;

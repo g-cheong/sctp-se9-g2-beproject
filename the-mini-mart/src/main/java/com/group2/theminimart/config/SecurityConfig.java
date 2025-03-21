@@ -2,6 +2,7 @@ package com.group2.theminimart.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -27,6 +28,8 @@ public class SecurityConfig {
         .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests((requests) -> requests
             .requestMatchers("/users/**", "/cart/**").authenticated()
+            .requestMatchers(HttpMethod.POST, "/products/**").authenticated()
+            .requestMatchers(HttpMethod.DELETE, "/products/**").authenticated()
             .anyRequest().permitAll());
     return http.build();
   }
