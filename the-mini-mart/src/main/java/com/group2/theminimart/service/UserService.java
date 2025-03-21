@@ -2,6 +2,8 @@ package com.group2.theminimart.service;
 
 import java.util.List;
 
+import com.group2.theminimart.dto.RatingRequestDto;
+import com.group2.theminimart.dto.RatingResponseDto;
 import com.group2.theminimart.dto.UserLoginRequestDto;
 import com.group2.theminimart.dto.UserRegisterRequestDto;
 import com.group2.theminimart.dto.UserResponseDto;
@@ -26,13 +28,13 @@ public interface UserService {
 
     public void deleteUser(Long id);
 
-    public List<Rating> getUserRatings(Long userId);
+    public List<Rating> getUserRatings(String username);
 
-    public Rating getUserRatingByProductId(Long userId, Long productId);
+    public Rating getUserRatingByProductId(String username, Long productId);
 
-    public Rating addProductRating(Long userId, Long productId, Rating rating);
+    public RatingResponseDto addProductRating(String username, Long productId, RatingRequestDto ratingDto);
 
-    public Rating updateProductRating(Long userId, Long productId, Rating rating);
+    public RatingResponseDto updateProductRating(String username, Long productId, RatingRequestDto ratingDto);
 
     public void deleteProductRating(Long userId, Long productId);
 }

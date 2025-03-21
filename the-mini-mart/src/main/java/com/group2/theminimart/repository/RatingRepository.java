@@ -13,7 +13,11 @@ public interface RatingRepository extends JpaRepository<Rating, Long> {
 
   Optional<Rating> findByUser_IdAndProduct_Id(Long userId, Long productId);
 
+  Optional<Rating> findByUser_UsernameAndProduct_Id(String username, Long productId);
+
   Optional<List<Rating>> findAllByUser_Id(Long userId);
+
+  Optional<List<Rating>> findAllByUser_Username(String username);
 
   @Query(value = "SELECT CAST (COALESCE(SUM(rate * rate_count) / NULLIF(SUM(rate_count),0), 0.0) as DOUBLE PRECISION) AS rate, "
       +

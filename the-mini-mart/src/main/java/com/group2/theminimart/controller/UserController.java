@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.group2.theminimart.dto.CartDto;
+import com.group2.theminimart.dto.RatingRequestDto;
+import com.group2.theminimart.dto.RatingResponseDto;
 import com.group2.theminimart.dto.UserResponseDto;
 import com.group2.theminimart.entity.Rating;
 import com.group2.theminimart.entity.User;
@@ -34,16 +37,14 @@ public class UserController {
     }
 
     // Create
-    @PostMapping("/{userId}/products/{productId}/ratings")
-    public ResponseEntity<Rating> createProductRating(@PathVariable Long userId,
-            @PathVariable Long productId,
-            @RequestBody Rating rating) {
+    @PostMapping("/ratings/products/{productId}")
+    public ResponseEntity<RatingResponseDto> createProductRating(@PathVariable Long productId,
+            @Valid @RequestBody RatingRequestDto ratingDto) {
         // TODO: Use SecurityContext to CRUD ratings by getting username and remove the
         // userId from PathVariable
-        // String username
-        // = SecurityContextHolder.getContext().getAuthentication().getName();
-        return new ResponseEntity<>(userService.addProductRating(userId, productId,
-                rating), HttpStatus.CREATED);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return new ResponseEntity<>(userService.addProductRating(username, productId,
+                ratingDto), HttpStatus.CREATED);
     }
 
     @PostMapping("/{userId}/cart")
@@ -64,14 +65,16 @@ public class UserController {
         return new ResponseEntity<>(userService.getUser(id), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}/ratings")
+    @GetMapping("/ratings")
     public ResponseEntity<List<Rating>> getUserRatings(@PathVariable Long id) {
-        return new ResponseEntity<>(userService.getUserRatings(id), HttpStatus.OK);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return new ResponseEntity<>(userService.getUserRatings(username), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}/products/{productId}/ratings")
-    public ResponseEntity<Rating> getUserRating(@PathVariable Long id, @PathVariable Long productId) {
-        return new ResponseEntity<>(userService.getUserRatingByProductId(id, productId), HttpStatus.OK);
+    @GetMapping("/ratings/products/{productId}")
+    public ResponseEntity<Rating> getUserRating(@PathVariable Long productId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return new ResponseEntity<>(userService.getUserRatingByProductId(username, productId), HttpStatus.OK);
     }
 
     @GetMapping("/{userId}/cart")
@@ -85,10 +88,11 @@ public class UserController {
         return new ResponseEntity<>(userService.updateUserPassword(id, user), HttpStatus.OK);
     }
 
-    @PutMapping("/{userId}/products/{productId}/ratings")
-    public ResponseEntity<Rating> updateProductRating(@PathVariable Long userId, @PathVariable Long productId,
-            @RequestBody Rating rating) {
-        return new ResponseEntity<>(userService.updateProductRating(userId, productId, rating), HttpStatus.OK);
+    @PutMapping("/ratings/products/{productId}")
+    public ResponseEntity<RatingResponseDto> updateProductRating(@PathVariable Long productId,
+            @Valid @RequestBody RatingRequestDto ratingDto) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return new ResponseEntity<>(userService.updateProductRating(username, productId, ratingDto), HttpStatus.OK);
     }
 
     @PutMapping("/{userId}/cart")
