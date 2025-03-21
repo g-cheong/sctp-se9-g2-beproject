@@ -22,7 +22,7 @@ public class WebConfig {
   public FilterRegistrationBean<CorsFilter> corsFilter() {
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     CorsConfiguration config = new CorsConfiguration();
-    config.addAllowedOrigin("*");
+    config.addAllowedOrigin("http://localhost:3000");
     config.setAllowCredentials(true);
     config.setAllowedHeaders(Arrays.asList(HttpHeaders.AUTHORIZATION,
         HttpHeaders.CONTENT_TYPE, HttpHeaders.ACCEPT));

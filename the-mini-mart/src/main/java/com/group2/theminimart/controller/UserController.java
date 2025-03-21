@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.group2.theminimart.dto.CartDto;
 import com.group2.theminimart.dto.RatingRequestDto;
 import com.group2.theminimart.dto.RatingResponseDto;
+import com.group2.theminimart.dto.SampleCartDto;
 import com.group2.theminimart.dto.UserResponseDto;
 import com.group2.theminimart.dto.UserUpdateRequestDto;
 import com.group2.theminimart.service.CartContentService;
@@ -117,6 +118,17 @@ public class UserController {
     }
 
     // CART READ
+    @GetMapping("/cart/sample")
+    public ResponseEntity<List<SampleCartDto>> getUserCart() {
+        SampleCartDto cartproduct1 = SampleCartDto.builder().id(1L)
+                .title("Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops").price(109.95)
+                .description(
+                        "Your perfect pack for everyday use and walks in the forest. Stash your laptop (up to 15 inches) in the padded sleeve, your everyday")
+                .image("https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg").quantity(1).total(109.95).build();
+
+        return new ResponseEntity<>(List.of(cartproduct1), HttpStatus.OK);
+    }
+
     @GetMapping("/{userId}/cart")
     public ResponseEntity<List<CartDto>> getUserCart(@Valid @PathVariable Long userId) {
         return new ResponseEntity<>(cartContentService.getCartContents(userId), HttpStatus.OK);
