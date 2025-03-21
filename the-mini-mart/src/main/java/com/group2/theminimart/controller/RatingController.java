@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.group2.theminimart.dto.RatingDto;
+import com.group2.theminimart.dto.RatingResponseDto;
 import com.group2.theminimart.entity.Rating;
 import com.group2.theminimart.service.RatingService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/ratings")
@@ -30,13 +32,13 @@ public class RatingController {
 
   // Read
   @GetMapping
-  public ResponseEntity<List<RatingDto>> getRatings() {
+  public ResponseEntity<List<RatingResponseDto>> getRatings() {
     return new ResponseEntity<>(ratingService.getRatings(), HttpStatus.OK);
   }
 
   // Update
   @PutMapping("/{id}")
-  public ResponseEntity<RatingDto> updateRating(@PathVariable Long id, @RequestBody Rating rating) {
+  public ResponseEntity<RatingResponseDto> updateRating(@PathVariable Long id, @Valid @RequestBody Rating rating) {
     return new ResponseEntity<>(ratingService.updateRating(id, rating), HttpStatus.OK);
   }
 

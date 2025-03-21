@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.group2.theminimart.config.UserAuthenticationProvider;
 import com.group2.theminimart.controller.CartContentController;
+import com.group2.theminimart.dto.RatingRequestDto;
+import com.group2.theminimart.dto.RatingResponseDto;
 import com.group2.theminimart.dto.UserLoginRequestDto;
 import com.group2.theminimart.dto.UserRegisterRequestDto;
 import com.group2.theminimart.dto.UserResponseDto;
@@ -26,6 +28,7 @@ import com.group2.theminimart.exception.UserAlreadyExistException;
 import com.group2.theminimart.exception.UserNotFoundException;
 import com.group2.theminimart.exception.UserWrongLoginDetailsException;
 import com.group2.theminimart.exception.WrongUserException;
+import com.group2.theminimart.mapper.RatingMapper;
 import com.group2.theminimart.mapper.UserMapper;
 import com.group2.theminimart.repository.CartContentRepository;
 import com.group2.theminimart.repository.ProductRepository;
@@ -135,48 +138,43 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Rating> getUserRatings(Long userId) {
-        return ratingRepository.findAllByUser_Id(userId).orElseThrow(() -> new RatingNotFoundException(userId));
+    public List<Rating> getUserRatings(String username) {
+        return ratingRepository.findAllByUser_Username(username).orElseThrow(() -> new RatingNotFoundException());
     }
 
     @Override
-    public Rating getUserRatingByProductId(Long userId, Long productId) {
-        return ratingRepository.findByUser_IdAndProduct_Id(userId, productId)
-                .orElseThrow(() -> new RatingNotFoundException(userId, productId));
+    public Rating getUserRatingByProductId(String username, Long productId) {
+        return ratingRepository.findByUser_UsernameAndProduct_Id(username, productId)
+                .orElseThrow(() -> new RatingNotFoundException());
     }
 
     @Override
-    public Rating addProductRating(Long userId, Long productId, Rating rating) {
-
-        // String username =
-        // SecurityContextHolder.getContext().getAuthentication().getName();
-
+    public RatingResponseDto addProductRating(String username, Long productId, RatingRequestDto ratingDto) {
         // check if userid and productid exist
-        User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+        User existingUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException());
         Product existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
         // check if user id and product id pair does not exist
         // (only 1 customer review per product)
-        if (ratingRepository.findByUser_IdAndProduct_Id(userId, productId).isPresent()) {
-            throw new RatingAlreadyExistException(userId, productId);
+        if (ratingRepository.findByUser_UsernameAndProduct_Id(username, productId).isPresent()) {
+            throw new RatingAlreadyExistException(username, productId);
         }
 
-        rating.setUser(existingUser);
-        rating.setProduct(existingProduct);
+        Rating rating = Rating.builder().rate(ratingDto.getRate()).user(existingUser).product(existingProduct).build();
 
-        return ratingRepository.save(rating);
+        return RatingMapper.RatingtoDto(ratingRepository.save(rating));
     }
 
     @Override
-    public Rating updateProductRating(Long userId, Long productId, Rating rating) {
-        Rating existingRating = ratingRepository.findByUser_IdAndProduct_Id(userId, productId)
-                .orElseThrow(() -> new RatingNotFoundException(userId, productId));
+    public RatingResponseDto updateProductRating(String username, Long productId, RatingRequestDto ratingDto) {
+        Rating existingRating = ratingRepository.findByUser_UsernameAndProduct_Id(username, productId)
+                .orElseThrow(() -> new RatingNotFoundException());
 
-        existingRating.setRate(rating.getRate());
+        existingRating.setRate(ratingDto.getRate());
 
-        return ratingRepository.save(existingRating);
+        return RatingMapper.RatingtoDto(ratingRepository.save(existingRating));
     }
 
     @Override
