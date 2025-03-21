@@ -7,9 +7,8 @@ import com.group2.theminimart.dto.RatingResponseDto;
 import com.group2.theminimart.dto.UserLoginRequestDto;
 import com.group2.theminimart.dto.UserRegisterRequestDto;
 import com.group2.theminimart.dto.UserResponseDto;
+import com.group2.theminimart.dto.UserUpdateRequestDto;
 import com.group2.theminimart.dto.UserWithTokenResponseDto;
-import com.group2.theminimart.entity.Rating;
-import com.group2.theminimart.entity.User;
 
 public interface UserService {
     // register
@@ -18,23 +17,21 @@ public interface UserService {
     // login
     public UserWithTokenResponseDto loginUser(UserLoginRequestDto userLoginRequestDto);
 
-    // public UserResponseDto createUser(User User);
-
     public List<UserResponseDto> getUsers();
 
     public UserResponseDto getUser(Long id);
 
-    public UserResponseDto updateUserPassword(Long id, User User);
+    public UserResponseDto updateUserPassword(String username, UserUpdateRequestDto userUpdateRequestDto);
 
-    public void deleteUser(Long id);
+    public void deleteUser(String username);
 
-    public List<Rating> getUserRatings(String username);
+    public List<RatingResponseDto> getUserRatings(String username);
 
-    public Rating getUserRatingByProductId(String username, Long productId);
+    public RatingResponseDto getUserRatingByProductId(String username, Long productId);
 
     public RatingResponseDto addProductRating(String username, Long productId, RatingRequestDto ratingDto);
 
     public RatingResponseDto updateProductRating(String username, Long productId, RatingRequestDto ratingDto);
 
-    public void deleteProductRating(Long userId, Long productId);
+    public void deleteProductRating(String username, Long productId);
 }

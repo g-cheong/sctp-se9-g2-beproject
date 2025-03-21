@@ -18,15 +18,14 @@ import com.group2.theminimart.dto.CartDto;
 import com.group2.theminimart.dto.RatingRequestDto;
 import com.group2.theminimart.dto.RatingResponseDto;
 import com.group2.theminimart.dto.UserResponseDto;
-import com.group2.theminimart.entity.Rating;
-import com.group2.theminimart.entity.User;
+import com.group2.theminimart.dto.UserUpdateRequestDto;
 import com.group2.theminimart.service.CartContentService;
 import com.group2.theminimart.service.UserService;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("api/users")
 public class UserController {
     private UserService userService;
     private CartContentService cartContentService;
@@ -36,58 +35,64 @@ public class UserController {
         this.cartContentService = cartContentService;
     }
 
-    // Create
-    @PostMapping("/ratings/products/{productId}")
-    public ResponseEntity<RatingResponseDto> createProductRating(@PathVariable Long productId,
-            @Valid @RequestBody RatingRequestDto ratingDto) {
-        // TODO: Use SecurityContext to CRUD ratings by getting username and remove the
-        // userId from PathVariable
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return new ResponseEntity<>(userService.addProductRating(username, productId,
-                ratingDto), HttpStatus.CREATED);
-    }
+    // -------------- USERS CRUD OPERATIONS --------------
+    // USER CREATE
+    // Created at AuthController register
 
-    @PostMapping("/{userId}/cart")
-    public ResponseEntity<CartDto> createCartContent(@Valid @PathVariable Long userId,
-            @Valid @RequestBody CartDto cartDto) {
-        return new ResponseEntity<>(cartContentService.createCartContent(userId, cartDto), HttpStatus.CREATED);
-    }
+    // USER READ
 
-    // Read
-
+    // admin feature
     @GetMapping
     public ResponseEntity<List<UserResponseDto>> getUsers() {
         return new ResponseEntity<>(userService.getUsers(), HttpStatus.OK);
     }
 
+    // admin feature
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDto> getUser(@PathVariable Long id) {
         return new ResponseEntity<>(userService.getUser(id), HttpStatus.OK);
     }
 
+    // USER UPDATE
+    @PutMapping
+    public ResponseEntity<UserResponseDto> updateUser(@RequestBody UserUpdateRequestDto userUpdateRequestDto) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return new ResponseEntity<>(userService.updateUserPassword(username, userUpdateRequestDto), HttpStatus.OK);
+    }
+
+    // USER DELETE
+    @DeleteMapping
+    public ResponseEntity<HttpStatus> deleteUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        userService.deleteUser(username);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    // -------------- RATINGS CRUD OPERATIONS --------------
+
+    // RATINGS CREATE
+    @PostMapping("/ratings/products/{productId}")
+    public ResponseEntity<RatingResponseDto> createProductRating(@PathVariable Long productId,
+            @Valid @RequestBody RatingRequestDto ratingDto) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return new ResponseEntity<>(userService.addProductRating(username, productId,
+                ratingDto), HttpStatus.CREATED);
+    }
+
+    // RATINGS READ
     @GetMapping("/ratings")
-    public ResponseEntity<List<Rating>> getUserRatings(@PathVariable Long id) {
+    public ResponseEntity<List<RatingResponseDto>> getUserRatings() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return new ResponseEntity<>(userService.getUserRatings(username), HttpStatus.OK);
     }
 
     @GetMapping("/ratings/products/{productId}")
-    public ResponseEntity<Rating> getUserRating(@PathVariable Long productId) {
+    public ResponseEntity<RatingResponseDto> getUserRating(@PathVariable Long productId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return new ResponseEntity<>(userService.getUserRatingByProductId(username, productId), HttpStatus.OK);
     }
 
-    @GetMapping("/{userId}/cart")
-    public ResponseEntity<List<CartDto>> getUserCart(@Valid @PathVariable Long userId) {
-        return new ResponseEntity<>(cartContentService.getCartContents(userId), HttpStatus.OK);
-    }
-
-    // Update
-    @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @RequestBody User user) {
-        return new ResponseEntity<>(userService.updateUserPassword(id, user), HttpStatus.OK);
-    }
-
+    // RATINGS UPDATE
     @PutMapping("/ratings/products/{productId}")
     public ResponseEntity<RatingResponseDto> updateProductRating(@PathVariable Long productId,
             @Valid @RequestBody RatingRequestDto ratingDto) {
@@ -95,6 +100,30 @@ public class UserController {
         return new ResponseEntity<>(userService.updateProductRating(username, productId, ratingDto), HttpStatus.OK);
     }
 
+    // RATINGS DELETE
+    @DeleteMapping("/ratings/products/{productId}")
+    public ResponseEntity<HttpStatus> deleteProductRating(@PathVariable Long productId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        userService.deleteProductRating(username, productId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    // -------------- RATINGS CRUD OPERATIONS --------------
+
+    // CART CREATE
+    @PostMapping("/{userId}/cart")
+    public ResponseEntity<CartDto> createCartContent(@Valid @PathVariable Long userId,
+            @Valid @RequestBody CartDto cartDto) {
+        return new ResponseEntity<>(cartContentService.createCartContent(userId, cartDto), HttpStatus.CREATED);
+    }
+
+    // CART READ
+    @GetMapping("/{userId}/cart")
+    public ResponseEntity<List<CartDto>> getUserCart(@Valid @PathVariable Long userId) {
+        return new ResponseEntity<>(cartContentService.getCartContents(userId), HttpStatus.OK);
+    }
+
+    // CART UPDATE
     @PutMapping("/{userId}/cart")
     public ResponseEntity<List<CartDto>> updateCart(@Valid @PathVariable Long userId,
             @Valid @RequestBody List<CartDto> cartDtoList) {
@@ -107,20 +136,7 @@ public class UserController {
         return new ResponseEntity<>(cartContentService.updateCartContent(userId, productId, cartDto), HttpStatus.OK);
     }
 
-    // Delete
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @DeleteMapping("/{userId}/products/{productId}/ratings")
-    public ResponseEntity<HttpStatus> deleteProductRating(@PathVariable Long userId, @PathVariable Long productId) {
-        userService.deleteProductRating(userId, productId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
+    // CART DELETE
     @DeleteMapping("/{userId}/cart")
     public ResponseEntity<HttpStatus> deleteCart(@Valid @PathVariable Long userId) {
         cartContentService.deleteCart(userId);

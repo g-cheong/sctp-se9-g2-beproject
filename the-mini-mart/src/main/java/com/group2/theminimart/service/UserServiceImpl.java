@@ -17,6 +17,7 @@ import com.group2.theminimart.dto.RatingResponseDto;
 import com.group2.theminimart.dto.UserLoginRequestDto;
 import com.group2.theminimart.dto.UserRegisterRequestDto;
 import com.group2.theminimart.dto.UserResponseDto;
+import com.group2.theminimart.dto.UserUpdateRequestDto;
 import com.group2.theminimart.dto.UserWithTokenResponseDto;
 import com.group2.theminimart.entity.Product;
 import com.group2.theminimart.entity.Rating;
@@ -27,7 +28,6 @@ import com.group2.theminimart.exception.RatingNotFoundException;
 import com.group2.theminimart.exception.UserAlreadyExistException;
 import com.group2.theminimart.exception.UserNotFoundException;
 import com.group2.theminimart.exception.UserWrongLoginDetailsException;
-import com.group2.theminimart.exception.WrongUserException;
 import com.group2.theminimart.mapper.RatingMapper;
 import com.group2.theminimart.mapper.UserMapper;
 import com.group2.theminimart.repository.CartContentRepository;
@@ -118,34 +118,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto updateUserPassword(Long id, User user) {
+    public UserResponseDto updateUserPassword(String username, UserUpdateRequestDto userUpdateRequestDto) {
         // find user else throw UserNotFoundException
-        // check username else throw WrongUserException
         // change password
-        User updatedUsers = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        if (!updatedUsers.getUsername().equals(user.getUsername())) {
-            throw new WrongUserException(id);
-        }
-        updatedUsers.setPassword(user.getPassword());
-        return UserMapper.usertoUserResponseDto(userRepository.save(updatedUsers));
+        User updatedUser = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException());
+
+        updatedUser.setPassword(passwordEncoder.encode(CharBuffer.wrap(userUpdateRequestDto.getPassword())));
+        return UserMapper.usertoUserResponseDto(userRepository.save(updatedUser));
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public void deleteUser(String username) {
         // check if user exist before delete or else throw error
-        userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        userRepository.deleteById(id);
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException());
+        userRepository.delete(user);
     }
 
     @Override
-    public List<Rating> getUserRatings(String username) {
-        return ratingRepository.findAllByUser_Username(username).orElseThrow(() -> new RatingNotFoundException());
-    }
-
-    @Override
-    public Rating getUserRatingByProductId(String username, Long productId) {
-        return ratingRepository.findByUser_UsernameAndProduct_Id(username, productId)
+    public List<RatingResponseDto> getUserRatings(String username) {
+        List<Rating> allUserRatings = ratingRepository.findAllByUser_Username(username)
                 .orElseThrow(() -> new RatingNotFoundException());
+        return allUserRatings.stream().map((rating) -> RatingMapper.RatingtoDto(rating)).collect(Collectors.toList());
+    }
+
+    @Override
+    public RatingResponseDto getUserRatingByProductId(String username, Long productId) {
+        return RatingMapper.RatingtoDto(ratingRepository.findByUser_UsernameAndProduct_Id(username, productId)
+                .orElseThrow(() -> new RatingNotFoundException()));
     }
 
     @Override
@@ -178,9 +177,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteProductRating(Long userId, Long productId) {
-        Rating existingRating = ratingRepository.findByUser_IdAndProduct_Id(userId, productId)
-                .orElseThrow(() -> new RatingNotFoundException(userId, productId));
+    public void deleteProductRating(String username, Long productId) {
+        Rating existingRating = ratingRepository.findByUser_UsernameAndProduct_Id(username, productId)
+                .orElseThrow(() -> new RatingNotFoundException());
 
         ratingRepository.delete(existingRating);
     }

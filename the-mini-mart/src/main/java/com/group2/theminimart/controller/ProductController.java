@@ -24,7 +24,7 @@ import com.group2.theminimart.service.ProductService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("api/products")
 public class ProductController {
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
     private ProductService productService;
