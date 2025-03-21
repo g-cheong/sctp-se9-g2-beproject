@@ -1,10 +1,13 @@
 package com.group2.theminimart.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,227 +18,280 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.group2.theminimart.dto.ProductDto;
 import com.group2.theminimart.dto.ProductRatingDto;
 import com.group2.theminimart.entity.Product;
+import com.group2.theminimart.exception.ProductNotFoundException;
+import com.group2.theminimart.exception.ProductSearchNotFoundException;
 import com.group2.theminimart.repository.ProductRepository;
 import com.group2.theminimart.repository.RatingRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class ProductServiceImplTest {
 
-    @Mock
-    private ProductRepository productRepository;
-    @Mock
-    private RatingRepository ratingRepository;
+        @Mock
+        private ProductRepository productRepository;
+        @Mock
+        private RatingRepository ratingRepository;
 
-    @InjectMocks
-    ProductServiceImpl productService;
+        @InjectMocks
+        ProductServiceImpl productService;
 
-    @Test
-    public void testCreateProduct() {
+        @Test
+        public void testCreateProduct() {
 
-        // 1. SETUP
-        Product product = Product.builder()
-                .title("Camera 3X")
-                .price(1299.99)
-                .description("Latest Water Resistant Camera")
-                .category("Electronics")
-                .image("Camera 3X.jpg")
-                .build();
+                // SETUP
+                Product product = Product.builder()
+                                .title("Camera 3X")
+                                .price(1299.99)
+                                .description("Latest Water Resistant Camera")
+                                .category("Electronics")
+                                .image("Camera 3X.jpg")
+                                .build();
 
-        ProductRatingDto ratingDto = new ProductRatingDto(0.0, 0);
+                ProductRatingDto ratingDto = new ProductRatingDto(0.0, 0);
 
-        when(productRepository.save(product)).thenReturn(product);
-        when(ratingRepository.findAverageRatingByProductId(any())).thenReturn(ratingDto);
+                when(productRepository.save(product)).thenReturn(product);
+                when(ratingRepository.findAverageRatingByProductId(any())).thenReturn(ratingDto);
 
-        ProductDto createdProductDto = productService.createProduct(product);
-        verify(productRepository, times(1)).save(product);
+                // Execute
+                ProductDto createdProductDto = productService.createProduct(product);
 
-        assertEquals(product.getTitle(), createdProductDto.getTitle());
-        assertEquals(product.getPrice(), createdProductDto.getPrice());
-        assertEquals(product.getDescription(), createdProductDto.getDescription());
-        assertEquals(product.getCategory(), createdProductDto.getCategory());
-        assertEquals(product.getImage(), createdProductDto.getImage());
-        assertEquals(ratingDto, createdProductDto.getRating());
+                // Verify
+                verify(productRepository, times(1)).save(product);
 
-    }
+                assertEquals(product.getTitle(), createdProductDto.getTitle());
+                assertEquals(product.getPrice(), createdProductDto.getPrice());
+                assertEquals(product.getDescription(), createdProductDto.getDescription());
+                assertEquals(product.getCategory(), createdProductDto.getCategory());
+                assertEquals(product.getImage(), createdProductDto.getImage());
+                assertEquals(ratingDto, createdProductDto.getRating());
 
-    @Test
-    public void testGetProduct() {
+        }
 
-        // 1. SETUP
-        Product product = Product.builder()
-                .id(1L)
-                .title("Camera 3X")
-                .price(1299.99)
-                .description("Latest Water Resistant Camera")
-                .category("Electronics")
-                .image("Camera 3X.jpg")
-                .build();
+        @Test
+        public void testGetProduct() {
 
-        ProductRatingDto ratingDto = new ProductRatingDto(0.0, 0);
+                // 1. SETUP
+                Product product = Product.builder()
+                                .id(1L)
+                                .title("Camera 3X")
+                                .price(1299.99)
+                                .description("Latest Water Resistant Camera")
+                                .category("Electronics")
+                                .image("Camera 3X.jpg")
+                                .build();
 
-        when(productRepository.findById(1L)).thenReturn(java.util.Optional.of(product));
-        when(ratingRepository.findAverageRatingByProductId(1L)).thenReturn(ratingDto);
+                ProductRatingDto ratingDto = new ProductRatingDto(0.0, 0);
 
-        // 2. EXECUTE
-        ProductDto foundProductDto = productService.getProduct(1L);
+                when(productRepository.findById(1L)).thenReturn(java.util.Optional.of(product));
+                when(ratingRepository.findAverageRatingByProductId(1L)).thenReturn(ratingDto);
 
-        // 3. VERIFY
-        verify(productRepository, times(1)).findById(1L);
+                // 2. EXECUTE
+                ProductDto foundProductDto = productService.getProduct(1L);
 
-        assertEquals(product.getTitle(), foundProductDto.getTitle());
-        assertEquals(product.getPrice(), foundProductDto.getPrice());
-        assertEquals(product.getDescription(), foundProductDto.getDescription());
-        assertEquals(product.getCategory(), foundProductDto.getCategory());
-        assertEquals(product.getImage(), foundProductDto.getImage());
-        assertEquals(ratingDto, foundProductDto.getRating());
+                // 3. VERIFY
+                verify(productRepository, times(1)).findById(1L);
 
-    }
+                assertEquals(product.getTitle(), foundProductDto.getTitle());
+                assertEquals(product.getPrice(), foundProductDto.getPrice());
+                assertEquals(product.getDescription(), foundProductDto.getDescription());
+                assertEquals(product.getCategory(), foundProductDto.getCategory());
+                assertEquals(product.getImage(), foundProductDto.getImage());
+                assertEquals(ratingDto, foundProductDto.getRating());
 
-    @Test
-    public void testGetAllProducts() {
-        // 1. SETUP
-        Product product1 = Product.builder()
-                .id(1L)
-                .title("Camera 3X")
-                .price(1299.99)
-                .description("Latest Water Resistant Camera")
-                .category("Electronics")
-                .image("Camera 3X.jpg")
-                .build();
+        }
 
-        Product product2 = Product.builder()
-                .id(2L)
-                .title("Camera 4X")
-                .price(1499.99)
-                .description("Latest Water Resistant Camera")
-                .category("Electronics")
-                .image("Camera 4X.jpg")
-                .build();
+        @Test
+        public void testGetProductNotFound() {
+                // 1. SETUP
+                when(productRepository.findById(1L)).thenReturn(Optional.empty());
 
-        ProductRatingDto ratingDto1 = new ProductRatingDto(0.0, 0);
-        ProductRatingDto ratingDto2 = new ProductRatingDto(0.0, 0);
+                // 2. EXECUTE
+                ProductNotFoundException exception = assertThrows(ProductNotFoundException.class, () -> {
+                        productService.getProduct(1L);
+                });
+                verify(productRepository, times(1)).findById(1L);
 
-        when(productRepository.findAll()).thenReturn(java.util.List.of(product1, product2));
-        when(ratingRepository.findAverageRatingByProductId(1L)).thenReturn(ratingDto1);
-        when(ratingRepository.findAverageRatingByProductId(2L)).thenReturn(ratingDto2);
+                // 3. VERIFY
+                assertEquals("Could not find product with id: 1", exception.getMessage());
 
-        // 2. EXECUTE
-        var productDtos = productService.getAllProducts();
+        }
 
-        // 3. VERIFY
-        verify(productRepository, times(1)).findAll();
-        assertEquals(2, productDtos.size());
+        @Test
+        public void testGetAllProducts() {
+                // 1. SETUP
+                Product product1 = Product.builder()
+                                .id(1L)
+                                .title("Camera 3X")
+                                .price(1299.99)
+                                .description("Latest Water Resistant Camera")
+                                .category("Electronics")
+                                .image("Camera 3X.jpg")
+                                .build();
 
-        assertEquals(product1.getTitle(), productDtos.get(0).getTitle());
-        assertEquals(product1.getPrice(), productDtos.get(0).getPrice());
-        assertEquals(product1.getDescription(), productDtos.get(0).getDescription());
-        assertEquals(product1.getCategory(), productDtos.get(0).getCategory());
-        assertEquals(product1.getImage(), productDtos.get(0).getImage());
-        assertEquals(ratingDto1, productDtos.get(0).getRating());
+                Product product2 = Product.builder()
+                                .id(2L)
+                                .title("Camera 4X")
+                                .price(1499.99)
+                                .description("Latest Water Resistant Camera")
+                                .category("Electronics")
+                                .image("Camera 4X.jpg")
+                                .build();
 
-        assertEquals(product2.getTitle(), productDtos.get(1).getTitle());
-        assertEquals(product2.getPrice(), productDtos.get(1).getPrice());
-        assertEquals(product2.getDescription(), productDtos.get(1).getDescription());
-        assertEquals(product2.getCategory(), productDtos.get(1).getCategory());
-        assertEquals(product2.getImage(), productDtos.get(1).getImage());
-        assertEquals(ratingDto2, productDtos.get(1).getRating());
-    }
+                ProductRatingDto ratingDto1 = new ProductRatingDto(0.0, 0);
+                ProductRatingDto ratingDto2 = new ProductRatingDto(0.0, 0);
 
-    @Test
-    public void testUpdateProduct() {
-        // 1. SETUP
-        Product product = Product.builder()
-                .id(1L)
-                .title("Camera 3X")
-                .price(1299.99)
-                .description("Latest Water Resistant Camera")
-                .category("Electronics")
-                .image("Camera 3X.jpg")
-                .build();
+                when(productRepository.findAll()).thenReturn(java.util.List.of(product1, product2));
+                when(ratingRepository.findAverageRatingByProductId(1L)).thenReturn(ratingDto1);
+                when(ratingRepository.findAverageRatingByProductId(2L)).thenReturn(ratingDto2);
 
-        ProductRatingDto ratingDto = new ProductRatingDto(0.0, 0);
+                // 2. EXECUTE
+                var productDtos = productService.getAllProducts();
 
-        when(productRepository.findById(1L)).thenReturn(java.util.Optional.of(product));
-        when(productRepository.save(product)).thenReturn(product);
-        when(ratingRepository.findAverageRatingByProductId(1L)).thenReturn(ratingDto);
+                // 3. VERIFY
+                verify(productRepository, times(1)).findAll();
+                assertEquals(2, productDtos.size());
 
-        // 2. EXECUTE
-        ProductDto updatedProductDto = productService.updateProduct(1L, product);
+                assertEquals(product1.getTitle(), productDtos.get(0).getTitle());
+                assertEquals(product1.getPrice(), productDtos.get(0).getPrice());
+                assertEquals(product1.getDescription(), productDtos.get(0).getDescription());
+                assertEquals(product1.getCategory(), productDtos.get(0).getCategory());
+                assertEquals(product1.getImage(), productDtos.get(0).getImage());
+                assertEquals(ratingDto1, productDtos.get(0).getRating());
 
-        // 3. VERIFY
-        verify(productRepository, times(1)).findById(1L);
-        verify(productRepository, times(1)).save(product);
+                assertEquals(product2.getTitle(), productDtos.get(1).getTitle());
+                assertEquals(product2.getPrice(), productDtos.get(1).getPrice());
+                assertEquals(product2.getDescription(), productDtos.get(1).getDescription());
+                assertEquals(product2.getCategory(), productDtos.get(1).getCategory());
+                assertEquals(product2.getImage(), productDtos.get(1).getImage());
+                assertEquals(ratingDto2, productDtos.get(1).getRating());
+        }
 
-        assertEquals(product.getTitle(), updatedProductDto.getTitle());
-        assertEquals(product.getPrice(), updatedProductDto.getPrice());
-        assertEquals(product.getDescription(), updatedProductDto.getDescription());
-        assertEquals(product.getCategory(), updatedProductDto.getCategory());
-        assertEquals(product.getImage(), updatedProductDto.getImage());
-        assertEquals(ratingDto, updatedProductDto.getRating());
-    }
+        @Test
+        public void testUpdateProduct() {
+                // 1. SETUP
+                Product product = Product.builder()
+                                .id(1L)
+                                .title("Camera 3X")
+                                .price(1299.99)
+                                .description("Latest Water Resistant Camera")
+                                .category("Electronics")
+                                .image("Camera 3X.jpg")
+                                .build();
 
-    @Test
-    public void testDeleteProduct() {
-        // 1. SETUP
-        Long id = 1L;
+                ProductRatingDto ratingDto = new ProductRatingDto(0.0, 0);
 
-        // 2. EXECUTE
-        productService.deleteProduct(id);
+                when(productRepository.findById(1L)).thenReturn(java.util.Optional.of(product));
+                when(productRepository.save(product)).thenReturn(product);
+                when(ratingRepository.findAverageRatingByProductId(1L)).thenReturn(ratingDto);
 
-        // 3. VERIFY
-        verify(productRepository, times(1)).deleteById(id);
-    }
+                // 2. EXECUTE
+                ProductDto updatedProductDto = productService.updateProduct(1L, product);
 
-    @Test
-    public void searchProducts() {
-        // 1. SETUP
-        Product product1 = Product.builder()
-                .id(1L)
-                .title("Camera 3X")
-                .price(1299.99)
-                .description("Latest Water Resistant Camera")
-                .category("Electronics")
-                .image("Camera 3X.jpg")
-                .build();
+                // 3. VERIFY
+                verify(productRepository, times(1)).findById(1L);
+                verify(productRepository, times(1)).save(product);
 
-        Product product2 = Product.builder()
-                .id(2L)
-                .title("Camera 4X")
-                .price(1499.99)
-                .description("Latest Water Resistant Camera")
-                .category("Electronics")
-                .image("Camera 4X.jpg")
-                .build();
+                assertEquals(product.getTitle(), updatedProductDto.getTitle());
+                assertEquals(product.getPrice(), updatedProductDto.getPrice());
+                assertEquals(product.getDescription(), updatedProductDto.getDescription());
+                assertEquals(product.getCategory(), updatedProductDto.getCategory());
+                assertEquals(product.getImage(), updatedProductDto.getImage());
+                assertEquals(ratingDto, updatedProductDto.getRating());
+        }
 
-        ProductRatingDto ratingDto1 = new ProductRatingDto(0.0, 0);
-        ProductRatingDto ratingDto2 = new ProductRatingDto(0.0, 0);
+        @Test
+        public void testDeleteProduct() {
+                // 1. SETUP
+                Long id = 1L;
+                Product product = Product.builder()
+                                .id(1L)
+                                .title("Camera 3X")
+                                .price(1299.99)
+                                .description("Latest Water Resistant Camera")
+                                .category("Electronics")
+                                .image("Camera 3X.jpg")
+                                .build();
 
-        when(productRepository.searchProducts("Camera", "", "Electronics"))
-                .thenReturn(java.util.List.of(product1, product2));
+                productRepository.save(product);
 
-        when(ratingRepository.findAverageRatingByProductId(1L)).thenReturn(ratingDto1);
-        when(ratingRepository.findAverageRatingByProductId(2L)).thenReturn(ratingDto2);
+                when(productRepository.existsById(id)).thenReturn(true);
 
-        // 2. EXECUTE
-        var productDtos = productService.searchProducts("Camera", "", "Electronics");
+                // 2. EXECUTE
+                productService.deleteProduct(id);
 
-        // 3. VERIFY
-        verify(productRepository, times(1)).searchProducts("Camera", "", "Electronics");
-        assertEquals(2, productDtos.size());
+                // 3. VERIFY
+                verify(productRepository, times(1)).deleteById(id);
+        }
 
-        assertEquals(product1.getTitle(), productDtos.get(0).getTitle());
-        assertEquals(product1.getPrice(), productDtos.get(0).getPrice());
-        assertEquals(product1.getDescription(), productDtos.get(0).getDescription());
-        assertEquals(product1.getCategory(), productDtos.get(0).getCategory());
-        assertEquals(product1.getImage(), productDtos.get(0).getImage());
-        assertEquals(ratingDto1, productDtos.get(0).getRating());
+        @Test
+        public void searchProducts() {
+                // 1. SETUP
+                Product product1 = Product.builder()
+                                .id(1L)
+                                .title("Camera 3X")
+                                .price(1299.99)
+                                .description("Latest Water Resistant Camera")
+                                .category("Electronics")
+                                .image("Camera 3X.jpg")
+                                .build();
 
-        assertEquals(product2.getTitle(), productDtos.get(1).getTitle());
-        assertEquals(product2.getPrice(), productDtos.get(1).getPrice());
-        assertEquals(product2.getDescription(), productDtos.get(1).getDescription());
-        assertEquals(product2.getCategory(), productDtos.get(1).getCategory());
-        assertEquals(product2.getImage(), productDtos.get(1).getImage());
-        assertEquals(ratingDto2, productDtos.get(1).getRating());
+                Product product2 = Product.builder()
+                                .id(2L)
+                                .title("Camera 4X")
+                                .price(1499.99)
+                                .description("Latest Water Resistant Camera")
+                                .category("Electronics")
+                                .image("Camera 4X.jpg")
+                                .build();
 
-    }
+                ProductRatingDto ratingDto1 = new ProductRatingDto(0.0, 0);
+                ProductRatingDto ratingDto2 = new ProductRatingDto(0.0, 0);
+
+                when(productRepository.searchProducts("Camera", "", "Electronics"))
+                                .thenReturn(java.util.List.of(product1, product2));
+
+                when(ratingRepository.findAverageRatingByProductId(1L)).thenReturn(ratingDto1);
+                when(ratingRepository.findAverageRatingByProductId(2L)).thenReturn(ratingDto2);
+
+                // 2. EXECUTE
+                var productDtos = productService.searchProducts("Camera", "", "Electronics");
+
+                // 3. VERIFY
+                verify(productRepository, times(1)).searchProducts("Camera", "", "Electronics");
+                assertEquals(2, productDtos.size());
+
+                assertEquals(product1.getTitle(), productDtos.get(0).getTitle());
+                assertEquals(product1.getPrice(), productDtos.get(0).getPrice());
+                assertEquals(product1.getDescription(), productDtos.get(0).getDescription());
+                assertEquals(product1.getCategory(), productDtos.get(0).getCategory());
+                assertEquals(product1.getImage(), productDtos.get(0).getImage());
+                assertEquals(ratingDto1, productDtos.get(0).getRating());
+
+                assertEquals(product2.getTitle(), productDtos.get(1).getTitle());
+                assertEquals(product2.getPrice(), productDtos.get(1).getPrice());
+                assertEquals(product2.getDescription(), productDtos.get(1).getDescription());
+                assertEquals(product2.getCategory(), productDtos.get(1).getCategory());
+                assertEquals(product2.getImage(), productDtos.get(1).getImage());
+                assertEquals(ratingDto2, productDtos.get(1).getRating());
+
+        }
+
+        @Test
+        public void searchProductsNotFoundTest() {
+                // 1. SETUP
+                when(productRepository.searchProducts("Camera", "", "Electronics"))
+                                .thenReturn(java.util.List.of());
+
+                // 2. EXECUTE
+                // var productDtos = productService.searchProducts("Camera", "", "Electronics");
+                ProductSearchNotFoundException exception = assertThrows(ProductSearchNotFoundException.class, () -> {
+                        productService.searchProducts("Camera", "", "Electronics");
+                });
+
+                // 3. VERIFY
+                verify(productRepository, times(1)).searchProducts("Camera", "", "Electronics");
+
+                assertEquals("No products found matching criteria - title: Camera, description: , category: Electronics",
+                                exception.getMessage());
+
+        }
 }

@@ -48,7 +48,7 @@ public class ProductControllerTest {
                 mockMvc.perform(request)
                                 .andExpect(status().isOk())
                                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                                .andExpect(jsonPath("$.size()").value(2));
+                                .andExpect(jsonPath("$.size()").value(1));
 
         }
 
@@ -144,7 +144,7 @@ public class ProductControllerTest {
         @Test
         public void deleteProductTest() throws Exception {
                 // Step 1: Build a DELETE request to /products/1
-                RequestBuilder request = MockMvcRequestBuilders.delete("/products/3");
+                RequestBuilder request = MockMvcRequestBuilders.delete("/products/2");
 
                 // Step 2: Perform the request, get the response and assert
                 mockMvc.perform(request)
@@ -171,6 +171,19 @@ public class ProductControllerTest {
                                 .andExpect(jsonPath("$[0].image").exists())
                                 .andExpect(jsonPath("$[0].rating.rate").exists())
                                 .andExpect(jsonPath("$[0].rating.count").exists());
+
+        }
+
+        @Test
+        public void searchProductsNotFoundTest() throws Exception {
+                // Step 1: Build a GET request to /products/search
+                RequestBuilder request = MockMvcRequestBuilders
+                                .get("/products/search?title=product 4&description=Description 4&category=category 4");
+
+                // Step 2: Perform the request, get the response and assert
+                mockMvc.perform(request)
+                                .andExpect(status().isNotFound())
+                                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
         }
 }

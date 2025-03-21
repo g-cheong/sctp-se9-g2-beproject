@@ -41,7 +41,7 @@ public class Product {
   @Positive(message = "Product price must be greater than 0")
   private Double price;
 
-  @Column
+  @Column(columnDefinition = "TEXT")
   private String description;
 
   @Column
