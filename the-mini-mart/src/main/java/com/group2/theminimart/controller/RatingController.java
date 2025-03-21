@@ -31,18 +31,23 @@ public class RatingController {
   // Create (only user able to create)
 
   // Read
+  // admin feature
   @GetMapping
   public ResponseEntity<List<RatingResponseDto>> getRatings() {
     return new ResponseEntity<>(ratingService.getRatings(), HttpStatus.OK);
   }
 
   // Update
+  // admin feature
   @PutMapping("/{id}")
-  public ResponseEntity<RatingResponseDto> updateRating(@PathVariable Long id, @Valid @RequestBody Rating rating) {
-    return new ResponseEntity<>(ratingService.updateRating(id, rating), HttpStatus.OK);
+  public ResponseEntity<RatingResponseDto> updateRating(@PathVariable Long id,
+      @Valid @RequestBody Rating rating) {
+    return new ResponseEntity<>(ratingService.updateRating(id, rating),
+        HttpStatus.OK);
   }
 
   // Delete
+  // admin feature
   @DeleteMapping("/{id}")
   public ResponseEntity<HttpStatus> deleteRating(@PathVariable Long id) {
     ratingService.deleteRating(id);

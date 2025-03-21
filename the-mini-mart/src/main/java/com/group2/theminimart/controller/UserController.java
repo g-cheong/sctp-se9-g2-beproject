@@ -40,7 +40,6 @@ public class UserController {
     // Created at AuthController register
 
     // USER READ
-
     // admin feature
     @GetMapping
     public ResponseEntity<List<UserResponseDto>> getUsers() {
