@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,6 +29,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = { "username" }))
 public class User {
+    public enum Role {
+        ADMIN,
+        USER
+    };
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -42,6 +49,10 @@ public class User {
     @NotBlank(message = "Password is required")
     private String password;
 
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Rating> ratings;
@@ -50,3 +61,5 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<CartContent> cart;
 }
+
+

@@ -1,11 +1,13 @@
 package com.group2.theminimart.util;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.group2.theminimart.entity.CartContent;
 import com.group2.theminimart.entity.Product;
 import com.group2.theminimart.entity.Rating;
 import com.group2.theminimart.entity.User;
+import com.group2.theminimart.entity.User.Role;
 import com.group2.theminimart.repository.CartContentRepository;
 import com.group2.theminimart.repository.ProductRepository;
 import com.group2.theminimart.repository.RatingRepository;
@@ -20,13 +22,19 @@ public class DataLoader {
   private ProductRepository productRepository;
   private RatingRepository ratingRepository;
   private CartContentRepository cartContentRepository;
+  private PasswordEncoder passwordEncoder;
 
-  public DataLoader(UserRepository userRepository, ProductRepository productRepository,
-      RatingRepository ratingRepository, CartContentRepository cartContentRepository) {
+  public DataLoader(UserRepository userRepository, 
+                    ProductRepository productRepository,
+                    RatingRepository ratingRepository, 
+                    CartContentRepository cartContentRepository,
+                    PasswordEncoder passwordEncoder
+                    ) {
     this.userRepository = userRepository;
     this.productRepository = productRepository;
     this.ratingRepository = ratingRepository;
     this.cartContentRepository = cartContentRepository;
+    this.passwordEncoder = passwordEncoder;
   }
 
   @PostConstruct
@@ -35,8 +43,7 @@ public class DataLoader {
     // CREATE USER
     User firhat = userRepository.save(User.builder().username("firhat").password("12345678").build());
     User min = userRepository.save(User.builder().username("min").password("12345678").build());
-    @SuppressWarnings("unused")
-    User gab = userRepository.save(User.builder().username("gab").password("12345678").build());
+    User gab = userRepository.save(User.builder().username("gab").password(passwordEncoder.encode("12345678")).role(Role.ADMIN).build());
 
     // CREATE PRODUCT
     

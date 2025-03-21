@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Primary;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.group2.theminimart.controller.CartContentController;
 import com.group2.theminimart.dto.UserDto;
 import com.group2.theminimart.entity.Product;
 import com.group2.theminimart.entity.Rating;
@@ -17,7 +17,6 @@ import com.group2.theminimart.exception.UserAlreadyExistException;
 import com.group2.theminimart.exception.UserNotFoundException;
 import com.group2.theminimart.exception.WrongUserException;
 import com.group2.theminimart.mapper.UserMapper;
-import com.group2.theminimart.repository.CartContentRepository;
 import com.group2.theminimart.repository.ProductRepository;
 import com.group2.theminimart.repository.RatingRepository;
 import com.group2.theminimart.repository.UserRepository;
@@ -25,19 +24,17 @@ import com.group2.theminimart.repository.UserRepository;
 @Primary
 @Service
 public class UserServiceImpl implements UserService {
-
-    // TODO to implement validation
-
     private UserRepository userRepository;
     private RatingRepository ratingRepository;
     private ProductRepository productRepository;
+    private PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(UserRepository userRepository, RatingRepository ratingRepository,
-            ProductRepository productRepository, CartContentController cartContentController,
-            CartContentRepository cartContentRepository, CartContentServiceImpl cartContentServiceImpl) {
+            ProductRepository productRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.ratingRepository = ratingRepository;
         this.productRepository = productRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -46,6 +43,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByUsernameIgnoringCase(user.getUsername()).isPresent()) {
             throw new UserAlreadyExistException();
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return UserMapper.UsertoDto(userRepository.save(user));
     }
 
