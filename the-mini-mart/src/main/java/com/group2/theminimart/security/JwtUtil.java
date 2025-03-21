@@ -1,16 +1,16 @@
 package com.group2.theminimart.util;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import javax.crypto.SecretKey;
 
-import org.hibernate.engine.jdbc.env.internal.LobCreationLogging_.logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+
+import com.group2.theminimart.security.JwtProperties;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -18,9 +18,15 @@ import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtUtil {
-    private static final String secretPhrase = "SECRET@#$%^&*()12345678op2323423";
-    private static final SecretKey KEY = Keys.hmacShaKeyFor(secretPhrase.getBytes());
-    private final long jwtTokenExpirationInMs = 3600000;
+    // private static final String secretPhrase = "SECRET@#$%^&*()12345678op2323423";
+    // private static final SecretKey KEY = Keys.hmacShaKeyFor(secretPhrase.getBytes());
+    private SecretKey KEY;
+    private long jwtTokenExpirationInMs = 3600000;
+
+    public JwtUtil(JwtProperties jwtProperties) {
+        this.KEY = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes());
+    }
+    
 
     public String generateToken(Authentication authentication) {
         // UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
