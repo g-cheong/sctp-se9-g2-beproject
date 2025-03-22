@@ -6,23 +6,36 @@ import com.group2.theminimart.entity.Product;
 import com.group2.theminimart.entity.User;
 
 public class CartMapper {
+    // public static CartDto toDto(CartContent cartContent) {
+    //     return new CartDto(
+    //         cartContent.getId(),
+    //         cartContent.getUser().getId(),
+    //         cartContent.getProduct().getId(),
+    //         cartContent.getProduct().getPrice(),
+    //         cartContent.getCount(),
+    //         cartContent.getTotal()
+    //     );
+    // } 
+    
     public static CartDto toDto(CartContent cartContent) {
         return new CartDto(
-            cartContent.getId(),
-            cartContent.getUser().getId(),
             cartContent.getProduct().getId(),
+            cartContent.getProduct().getTitle(),
             cartContent.getProduct().getPrice(),
+            cartContent.getProduct().getDescription(),
+            cartContent.getProduct().getImage(),
             cartContent.getCount(),
             cartContent.getTotal()
         );
-    }    
+    }
 
     public static CartContent fromDto(CartDto cartDto, User user, Product product) {
         return CartContent.builder()
                 .user(user)
                 .product(product) 
-                .count(cartDto.getCount())
+                .count(cartDto.getQuantity())
                 .total(cartDto.getTotal())
                 .build();
     }
+    
 }

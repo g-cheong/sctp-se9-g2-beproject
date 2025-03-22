@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.group2.theminimart.dto.CartDto;
 import com.group2.theminimart.dto.RatingRequestDto;
 import com.group2.theminimart.dto.RatingResponseDto;
-import com.group2.theminimart.dto.SampleCartDto;
 import com.group2.theminimart.dto.UserResponseDto;
 import com.group2.theminimart.dto.UserUpdateRequestDto;
 import com.group2.theminimart.service.CartContentService;
@@ -108,56 +107,46 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // -------------- RATINGS CRUD OPERATIONS --------------
+    // -------------- CART CRUD OPERATIONS --------------
 
     // CART CREATE
-    @PostMapping("/{userId}/cart")
-    public ResponseEntity<CartDto> createCartContent(@Valid @PathVariable Long userId,
-            @Valid @RequestBody CartDto cartDto) {
-        return new ResponseEntity<>(cartContentService.createCartContent(userId, cartDto), HttpStatus.CREATED);
+    @PostMapping("/cart")
+    public ResponseEntity<CartDto> createCartContent(@Valid @RequestBody CartDto cartDto) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return new ResponseEntity<>(cartContentService.createCartContent(username, cartDto), HttpStatus.CREATED);
     }
 
-    // CART READ
-    @GetMapping("/cart/sample")
-    public ResponseEntity<List<SampleCartDto>> getUserCart() {
-        SampleCartDto cartproduct1 = SampleCartDto.builder().id(1L)
-                .title("Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops").price(109.95)
-                .description(
-                        "Your perfect pack for everyday use and walks in the forest. Stash your laptop (up to 15 inches) in the padded sleeve, your everyday")
-                .image("https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg").quantity(1).total(109.95).build();
-
-        return new ResponseEntity<>(List.of(cartproduct1), HttpStatus.OK);
-    }
-
-    @GetMapping("/{userId}/cart")
-    public ResponseEntity<List<CartDto>> getUserCart(@Valid @PathVariable Long userId) {
-        return new ResponseEntity<>(cartContentService.getCartContents(userId), HttpStatus.OK);
+    @GetMapping("/cart")
+    public ResponseEntity<List<CartDto>> getUserCart() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return new ResponseEntity<>(cartContentService.getCartContents(username), HttpStatus.OK);
     }
 
     // CART UPDATE
-    @PutMapping("/{userId}/cart")
-    public ResponseEntity<List<CartDto>> updateCart(@Valid @PathVariable Long userId,
-            @Valid @RequestBody List<CartDto> cartDtoList) {
-        return new ResponseEntity<>(cartContentService.updateCart(userId, cartDtoList), HttpStatus.OK);
+    @PutMapping("/cart")
+    public ResponseEntity<List<CartDto>> updateCart(@Valid @RequestBody List<CartDto> cartDtoList) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return new ResponseEntity<>(cartContentService.updateCart(username, cartDtoList), HttpStatus.OK);
     }
 
-    @PutMapping("/{userId}/cart/{productId}")
-    public ResponseEntity<CartDto> updateCartContent(@Valid @PathVariable Long userId,
-            @Valid @PathVariable Long productId, @Valid @RequestBody CartDto cartDto) {
-        return new ResponseEntity<>(cartContentService.updateCartContent(userId, productId, cartDto), HttpStatus.OK);
+    @PutMapping("/cart/{productId}")
+    public ResponseEntity<CartDto> updateCartContent(@Valid @PathVariable Long productId, @Valid @RequestBody CartDto cartDto) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return new ResponseEntity<>(cartContentService.updateCartContent(username, productId, cartDto), HttpStatus.OK);
     }
 
     // CART DELETE
-    @DeleteMapping("/{userId}/cart")
-    public ResponseEntity<HttpStatus> deleteCart(@Valid @PathVariable Long userId) {
-        cartContentService.deleteCart(userId);
+    @DeleteMapping("cart")
+    public ResponseEntity<HttpStatus> deleteCart() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        cartContentService.deleteCart(username);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/{userId}/cart/{productId}")
-    public ResponseEntity<HttpStatus> deleteCartContent(@Valid @PathVariable Long userId,
-            @Valid @PathVariable Long productId) {
-        cartContentService.deleteCartContent(userId, productId);
+    @DeleteMapping("/cart/{productId}")
+    public ResponseEntity<HttpStatus> deleteCartContent(@Valid @PathVariable Long productId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        cartContentService.deleteCartContent(username, productId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

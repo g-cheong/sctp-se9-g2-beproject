@@ -15,5 +15,4 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                         "(:category = '' OR LOWER(p.category) LIKE LOWER(CONCAT('%', :category, '%')))")
         List<Product> searchProducts(@Param("title") String title, @Param("description") String description,
                         @Param("category") String category);
-
 }

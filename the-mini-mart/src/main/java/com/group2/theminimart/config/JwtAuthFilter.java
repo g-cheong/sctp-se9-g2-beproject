@@ -3,6 +3,7 @@ package com.group2.theminimart.config;
 import java.io.IOException;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -18,7 +19,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
   private final UserAuthenticationProvider userAuthenticationProvider;
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+  protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
       throws ServletException, IOException {
     String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
