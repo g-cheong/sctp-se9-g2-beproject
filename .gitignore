@@ -25,3 +25,5 @@ replay_pid*
 
 # ignore the application-dev.properties
 **/application-dev.properties
+**/.DS_Store
+sctp-se9-g2-feproject

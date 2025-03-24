@@ -27,10 +27,10 @@ public class SecurityConfig {
         .csrf(csrf -> csrf.disable())
         .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests((requests) -> requests
-            .requestMatchers("api/users/**", "api/cart/**").authenticated()
-            .requestMatchers(HttpMethod.POST, "api/products/**").authenticated()
-            .requestMatchers(HttpMethod.PUT, "api/products/**").authenticated()
-            .requestMatchers(HttpMethod.DELETE, "api/products/**").authenticated()
+            .requestMatchers("/api/users/**", "/api/cart/**").authenticated()
+            .requestMatchers(HttpMethod.POST, "/api/products/**").authenticated()
+            .requestMatchers(HttpMethod.PUT, "/api/products/**").authenticated()
+            .requestMatchers(HttpMethod.DELETE, "/api/products/**").authenticated()
             .anyRequest().permitAll());
     return http.build();
   }
