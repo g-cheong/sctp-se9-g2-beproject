@@ -130,7 +130,8 @@ public class UserController {
     }
 
     @PutMapping("/cart/{productId}")
-    public ResponseEntity<CartDto> updateCartContent(@Valid @PathVariable Long productId, @Valid @RequestBody CartDto cartDto) {
+    public ResponseEntity<CartDto> updateCartContent(@Valid @PathVariable Long productId,
+            @Valid @RequestBody CartDto cartDto) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return new ResponseEntity<>(cartContentService.updateCartContent(username, productId, cartDto), HttpStatus.OK);
     }

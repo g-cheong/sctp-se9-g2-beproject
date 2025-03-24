@@ -27,3 +27,4 @@ replay_pid*
 **/application-dev.properties
 **/.DS_Store
 sctp-se9-g2-feproject
+.vscode

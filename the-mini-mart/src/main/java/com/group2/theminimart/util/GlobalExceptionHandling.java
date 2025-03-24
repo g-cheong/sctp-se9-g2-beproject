@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.group2.theminimart.dto.ErrorResponse;
 import com.group2.theminimart.exception.CartContentAlreadyExistException;
+import com.group2.theminimart.exception.CartContentNotFoundException;
 import com.group2.theminimart.exception.CartNotFoundException;
 import com.group2.theminimart.exception.ProductNotFoundException;
 import com.group2.theminimart.exception.ProductSearchNotFoundException;
@@ -22,6 +23,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandling {
@@ -30,7 +32,8 @@ public class GlobalExceptionHandling {
 
   // 404 Resource not found
   @ExceptionHandler({ CartNotFoundException.class, ProductNotFoundException.class, RatingNotFoundException.class,
-      UserNotFoundException.class, ProductSearchNotFoundException.class })
+      UserNotFoundException.class, ProductSearchNotFoundException.class, CartContentNotFoundException.class,
+      NoHandlerFoundException.class })
   public ResponseEntity<ErrorResponse> handleNotFoundException(Exception e) {
     logger.error("🔴 " + HttpStatus.NOT_FOUND + " " + e);
     ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), LocalDateTime.now());
