@@ -18,9 +18,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.group2.theminimart.dto.ProductDto;
+import com.group2.theminimart.dto.ProductRequestDto;
 import com.group2.theminimart.entity.Product;
 import com.group2.theminimart.service.ProductService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
@@ -33,14 +36,17 @@ public class ProductController {
         this.productService = productService;
     }
 
+    @Operation(summary = "Create a new product")
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("")
-    public ResponseEntity<ProductDto> createProduct(@Valid @RequestBody Product product) {
-        logger.info("Request to create a new product: {}", product.getTitle());
-        ProductDto newProductDto = productService.createProduct(product);
+    public ResponseEntity<ProductDto> createProduct(@Valid @RequestBody ProductRequestDto productRequestDto) {
+        logger.info("Request to create a new product: {}", productRequestDto.getTitle());
+        ProductDto newProductDto = productService.createProduct(productRequestDto);
         logger.info("Created a new product|Id: {}", newProductDto.getId());
         return new ResponseEntity<>(newProductDto, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Get all products")
     @GetMapping("")
     public ResponseEntity<List<ProductDto>> getAllallProducts() {
         logger.info("Request to get all products");
@@ -49,6 +55,7 @@ public class ProductController {
         return new ResponseEntity<>(allProductsDto, HttpStatus.OK);
     }
 
+    @Operation(summary = "Get a product by id")
     @GetMapping("/{id}")
     public ResponseEntity<ProductDto> getProduct(@PathVariable Long id) {
         logger.info("Request to get product by id: {}", id);
@@ -58,14 +65,19 @@ public class ProductController {
 
     }
 
+    @Operation(summary = "Update a product by id")
+    @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id, @Valid @RequestBody Product product) {
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id,
+            @Valid @RequestBody ProductRequestDto productRequestDto) {
         logger.info("Request to update product by id: {}", id);
-        ProductDto updatedProductDto = productService.updateProduct(id, product);
+        ProductDto updatedProductDto = productService.updateProduct(id, productRequestDto);
         logger.info("Updated product|Id: {}", updatedProductDto.getId());
         return new ResponseEntity<>(updatedProductDto, HttpStatus.OK);
     }
 
+    @Operation(summary = "Delete a product by id")
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteProduct(@PathVariable Long id) {
         logger.info("Request to delete product by id: {}", id);
@@ -74,6 +86,7 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Operation(summary = "Search products by title, description, and category")
     @GetMapping("/search")
     public ResponseEntity<List<ProductDto>> searchProducts(@RequestParam(required = false) String title,
             @RequestParam(required = false) String description,

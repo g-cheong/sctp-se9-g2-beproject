@@ -17,9 +17,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.group2.theminimart.dto.ProductDto;
 import com.group2.theminimart.dto.ProductRatingDto;
+import com.group2.theminimart.dto.ProductRequestDto;
 import com.group2.theminimart.entity.Product;
 import com.group2.theminimart.exception.ProductNotFoundException;
 import com.group2.theminimart.exception.ProductSearchNotFoundException;
+import com.group2.theminimart.mapper.ProductMapper;
 import com.group2.theminimart.repository.ProductRepository;
 import com.group2.theminimart.repository.RatingRepository;
 
@@ -38,21 +40,18 @@ public class ProductServiceImplTest {
         public void testCreateProduct() {
 
                 // SETUP
-                Product product = Product.builder()
-                                .title("Camera 3X")
-                                .price(1299.99)
+                ProductRequestDto productRequestDto = ProductRequestDto.builder().title("Camera 3X").price(1299.99)
                                 .description("Latest Water Resistant Camera")
-                                .category("Electronics")
-                                .image("Camera 3X.jpg")
-                                .build();
+                                .category("Electronics").image("Camera 3X.jpg").build();
 
                 ProductRatingDto ratingDto = new ProductRatingDto(0.0, 0);
 
+                Product product = ProductMapper.productDtoToProduct(productRequestDto);
                 when(productRepository.save(product)).thenReturn(product);
                 when(ratingRepository.findAverageRatingByProductId(any())).thenReturn(ratingDto);
 
                 // Execute
-                ProductDto createdProductDto = productService.createProduct(product);
+                ProductDto createdProductDto = productService.createProduct(productRequestDto);
 
                 // Verify
                 verify(productRepository, times(1)).save(product);
@@ -168,23 +167,21 @@ public class ProductServiceImplTest {
         @Test
         public void testUpdateProduct() {
                 // 1. SETUP
-                Product product = Product.builder()
-                                .id(1L)
-                                .title("Camera 3X")
-                                .price(1299.99)
+                ProductRequestDto productRequestDto = ProductRequestDto.builder().title("Camera 3X").price(1299.99)
                                 .description("Latest Water Resistant Camera")
-                                .category("Electronics")
-                                .image("Camera 3X.jpg")
-                                .build();
+                                .category("Electronics").image("Camera 3X.jpg").build();
 
                 ProductRatingDto ratingDto = new ProductRatingDto(0.0, 0);
 
+                Product product = ProductMapper.productDtoToProduct(productRequestDto);
+                product.setId(1L);
+
                 when(productRepository.findById(1L)).thenReturn(java.util.Optional.of(product));
                 when(productRepository.save(product)).thenReturn(product);
-                when(ratingRepository.findAverageRatingByProductId(1L)).thenReturn(ratingDto);
+                when(ratingRepository.findAverageRatingByProductId(any())).thenReturn(ratingDto);
 
                 // 2. EXECUTE
-                ProductDto updatedProductDto = productService.updateProduct(1L, product);
+                ProductDto updatedProductDto = productService.updateProduct(1L, productRequestDto);
 
                 // 3. VERIFY
                 verify(productRepository, times(1)).findById(1L);

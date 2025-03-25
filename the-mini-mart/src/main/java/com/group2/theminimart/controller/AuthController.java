@@ -13,6 +13,7 @@ import com.group2.theminimart.dto.UserResponseDto;
 import com.group2.theminimart.dto.UserWithTokenResponseDto;
 import com.group2.theminimart.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 
 @RestController
@@ -25,12 +26,14 @@ public class AuthController {
     this.userService = userService;
   }
 
+  @Operation(summary = "Register New User")
   @PostMapping("/register")
   public ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody UserRegisterRequestDto user) {
     return new ResponseEntity<>(userService.registerUser(user),
         HttpStatus.CREATED);
   }
 
+  @Operation(summary = "User Login")
   @PostMapping("/login")
   public ResponseEntity<UserWithTokenResponseDto> loginUser(@Valid @RequestBody UserLoginRequestDto user) {
     return new ResponseEntity<>(userService.loginUser(user), HttpStatus.OK);
