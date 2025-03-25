@@ -8,9 +8,11 @@ import org.slf4j.LoggerFactory;
 
 import com.group2.theminimart.dto.ProductDto;
 import com.group2.theminimart.dto.ProductRatingDto;
+import com.group2.theminimart.dto.ProductRequestDto;
 import com.group2.theminimart.entity.Product;
 import com.group2.theminimart.exception.ProductNotFoundException;
 import com.group2.theminimart.exception.ProductSearchNotFoundException;
+import com.group2.theminimart.mapper.ProductMapper;
 import com.group2.theminimart.repository.ProductRepository;
 import com.group2.theminimart.repository.RatingRepository;
 
@@ -26,9 +28,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto createProduct(Product product) {
-        logger.info("Request to create a new product: {}", product.getTitle());
-        Product newProduct = productRepository.save(product);
+    public ProductDto createProduct(ProductRequestDto productRequestDto) {
+        logger.info("Request to create a new product: {}", productRequestDto.getTitle());
+        Product newProduct = productRepository.save(ProductMapper.productDtoToProduct(productRequestDto));
         logger.info("Created a new product|Id: {}", newProduct.getId());
         return convertToDto(newProduct);
 
@@ -53,15 +55,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto updateProduct(Long id, Product product) {
+    public ProductDto updateProduct(Long id, ProductRequestDto productRequestDto) {
         Product productToUpdate = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
         // update the product retrieved from the database.
-        productToUpdate.setTitle(product.getTitle());
-        productToUpdate.setPrice(product.getPrice());
-        productToUpdate.setDescription(product.getDescription());
-        productToUpdate.setCategory(product.getCategory());
-        productToUpdate.setImage(product.getImage());
+        productToUpdate.setTitle(productRequestDto.getTitle());
+        productToUpdate.setPrice(productRequestDto.getPrice());
+        productToUpdate.setDescription(productRequestDto.getDescription());
+        productToUpdate.setCategory(productRequestDto.getCategory());
+        productToUpdate.setImage(productRequestDto.getImage());
         logger.info("Request to update product by id: {}", id);
         // save the updated product back to the database.
         Product updatedProduct = productRepository.save(productToUpdate);

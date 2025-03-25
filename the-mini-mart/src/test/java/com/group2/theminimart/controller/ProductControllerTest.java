@@ -13,9 +13,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.hamcrest.Matchers.*;
 import com.jayway.jsonpath.JsonPath;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import com.group2.theminimart.dto.ProductRequestDto;
 import com.group2.theminimart.dto.UserLoginRequestDto;
-import com.group2.theminimart.entity.Product;
+//import com.group2.theminimart.entity.Product;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -59,16 +59,17 @@ public class ProductControllerTest {
         @Test
         public void validCreateProductTest() throws Exception {
                 // Step 1: Build a POST request to /products
-                Product newProduct = Product.builder().title("Product 3").price(100.0).description("Description 3")
+                ProductRequestDto newProductDto = ProductRequestDto.builder().title("Product 3").price(100.0)
+                                .description("Description 3")
                                 .category("Category 3").image("Image 3").build();
 
-                String newProductAsJSON = objectMapper.writeValueAsString(newProduct);
+                String newProductDtoAsJSON = objectMapper.writeValueAsString(newProductDto);
 
                 // Build a POST request to /products with the token
                 RequestBuilder request = MockMvcRequestBuilders.post("/api/products")
                                 .header("Authorization", "Bearer " + getToken())
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(newProductAsJSON);
+                                .content(newProductDtoAsJSON);
 
                 // Step 2: Perform the request, get the response and assert
                 mockMvc.perform(request)
@@ -87,15 +88,16 @@ public class ProductControllerTest {
 
         @Test
         public void invalidCreateProductTest() throws Exception {
-                Product newProduct = Product.builder().title("").price(0.00).description("Description 3")
+                ProductRequestDto newProductDto = ProductRequestDto.builder().title("").price(0.00)
+                                .description("Description 3")
                                 .category("Category 3").image("Image 3").build();
 
-                String newProductAsJSON = objectMapper.writeValueAsString(newProduct);
+                String newProductDtoAsJSON = objectMapper.writeValueAsString(newProductDto);
 
                 RequestBuilder request = MockMvcRequestBuilders.post("/api/products")
                                 .header("Authorization", "Bearer " + getToken())
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(newProductAsJSON);
+                                .content(newProductDtoAsJSON);
 
                 mockMvc.perform(request)
                                 .andExpect(status().isBadRequest())
@@ -106,16 +108,17 @@ public class ProductControllerTest {
         @Test
         public void validUpdateProductTest() throws Exception {
                 // Step 1: Build a PUT request to /products/1
-                Product updatedProduct = Product.builder().title("Product 1 Updated").price(200.0)
+                ProductRequestDto updatedProductDto = ProductRequestDto.builder().title("Product 1 Updated")
+                                .price(200.0)
                                 .description("Description 1 Updated").category("Category 1 Updated")
                                 .image("Image 1 Updated").build();
 
-                String updatedProductAsJSON = objectMapper.writeValueAsString(updatedProduct);
+                String updatedProductDtoAsJSON = objectMapper.writeValueAsString(updatedProductDto);
 
                 RequestBuilder request = MockMvcRequestBuilders.put("/api/products/1")
                                 .header("Authorization", "Bearer " + getToken())
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(updatedProductAsJSON);
+                                .content(updatedProductDtoAsJSON);
 
                 // Step 2: Perform the request, get the response and assert
                 mockMvc.perform(request)
@@ -134,15 +137,16 @@ public class ProductControllerTest {
 
         @Test
         public void invalidUpdateProductTest() throws Exception {
-                Product updatedProduct = Product.builder().title("").price(0.00).description("Description 1 Updated")
+                ProductRequestDto updatedProductDto = ProductRequestDto.builder().title("").price(0.00)
+                                .description("Description 1 Updated")
                                 .category("Category 1 Updated").image("Image 1 Updated").build();
 
-                String updatedProductAsJSON = objectMapper.writeValueAsString(updatedProduct);
+                String updatedProductDtoAsJSON = objectMapper.writeValueAsString(updatedProductDto);
 
                 RequestBuilder request = MockMvcRequestBuilders.put("/api/products/1")
                                 .header("Authorization", "Bearer " + getToken())
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(updatedProductAsJSON);
+                                .content(updatedProductDtoAsJSON);
 
                 mockMvc.perform(request)
                                 .andExpect(status().isBadRequest())

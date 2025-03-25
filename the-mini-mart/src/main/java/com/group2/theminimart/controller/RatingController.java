@@ -16,6 +16,7 @@ import com.group2.theminimart.dto.RatingResponseDto;
 import com.group2.theminimart.entity.Rating;
 import com.group2.theminimart.service.RatingService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 
 @RestController
@@ -32,6 +33,7 @@ public class RatingController {
 
   // Read
   // admin feature
+  @Operation(summary = "Get All Ratings")
   @GetMapping
   public ResponseEntity<List<RatingResponseDto>> getRatings() {
     return new ResponseEntity<>(ratingService.getRatings(), HttpStatus.OK);
@@ -39,6 +41,7 @@ public class RatingController {
 
   // Update
   // admin feature
+  @Operation(summary = "Update Rating by Id")
   @PutMapping("/{id}")
   public ResponseEntity<RatingResponseDto> updateRating(@PathVariable Long id,
       @Valid @RequestBody Rating rating) {
@@ -48,6 +51,7 @@ public class RatingController {
 
   // Delete
   // admin feature
+  @Operation(summary = "Delete Rating by Id")
   @DeleteMapping("/{id}")
   public ResponseEntity<HttpStatus> deleteRating(@PathVariable Long id) {
     ratingService.deleteRating(id);

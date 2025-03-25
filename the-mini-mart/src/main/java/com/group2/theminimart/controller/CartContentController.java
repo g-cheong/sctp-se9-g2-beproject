@@ -14,10 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.group2.theminimart.dto.CartDto;
 import com.group2.theminimart.entity.CartContent;
 import com.group2.theminimart.service.CartContentService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("api/cart")
+@SecurityRequirement(name = "bearerAuth")
 public class CartContentController {
     private CartContentService cartContentService;
 
@@ -26,6 +30,7 @@ public class CartContentController {
     };
 
     // create
+    @Operation(summary = "Create Cart Content")
     @PostMapping
     public ResponseEntity<CartContent> createCartContent(@Valid @RequestBody CartContent cartContent) {
         return new ResponseEntity<>(cartContentService.createCartContent(cartContent), HttpStatus.ACCEPTED);
@@ -37,19 +42,21 @@ public class CartContentController {
     // return new ResponseEntity<>(cartContentService.getCartContents(),
     // HttpStatus.OK);
     // }
-
+    @Operation(summary = "Get Cart Content by User Id")
     @GetMapping("/{id}")
     public ResponseEntity<CartDto> getCartContent(@PathVariable Long userId) {
         return new ResponseEntity<>(cartContentService.getCartContent(userId), HttpStatus.OK);
     }
 
     // update
+    @Operation(summary = "Update Cart Content by Id")
     @PutMapping("/{id}")
     public ResponseEntity<CartDto> updateCartContent(@PathVariable Long id, @Valid @RequestBody CartDto cartDto) {
         return new ResponseEntity<>(cartContentService.updateCartContent(id, 1L, cartDto), HttpStatus.ACCEPTED);
     }
 
     // delete
+    @Operation(summary = "Delete Cart by Id")
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteCart(@PathVariable Long id) {
         return new ResponseEntity<>(HttpStatus.OK);
