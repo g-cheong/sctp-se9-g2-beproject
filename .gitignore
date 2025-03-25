@@ -28,3 +28,4 @@ replay_pid*
 **/.DS_Store
 sctp-se9-g2-feproject
 .vscode
+the-mini-mart/src/main/resources/static/

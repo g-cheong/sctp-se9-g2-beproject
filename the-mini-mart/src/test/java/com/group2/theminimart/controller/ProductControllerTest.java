@@ -74,7 +74,7 @@ public class ProductControllerTest {
                 mockMvc.perform(request)
                                 .andExpect(status().isCreated())
                                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                                .andExpect(jsonPath("$.id").value(4))
+                                .andExpect(jsonPath("$.id").value(21))
                                 .andExpect(jsonPath("$.title").value("Product 3"))
                                 .andExpect(jsonPath("$.price").value(100.0))
                                 .andExpect(jsonPath("$.description").value("Description 3"))
