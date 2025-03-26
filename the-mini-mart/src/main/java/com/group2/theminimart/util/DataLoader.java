@@ -40,12 +40,15 @@ public class DataLoader {
         public void loadData() {
 
                 // CREATE USER
-                userService.registerUser(UserRegisterRequestDto.builder().username("firhat").password("12345678").build());
+                userService.registerUser(
+                UserRegisterRequestDto.builder().username("firhat").password("12345678").roles(Arrays.asList("ADMIN", "USER")).build());
                 User firhat = userRepository.findByUsername("firhat").get();
-                userService.registerUser(UserRegisterRequestDto.builder().username("min").password("12345678").build());
+                userService.registerUser(UserRegisterRequestDto.builder().username("min").password("12345678").roles(Arrays.asList("ADMIN", "USER")).build());
                 User min = userRepository.findByUsername("min").get();
                 userService.registerUser(UserRegisterRequestDto.builder().username("gab").password("12345678").roles(Arrays.asList("ADMIN", "USER")).build());
                 User gab = userRepository.findByUsername("gab").get();
+                userService.registerUser(UserRegisterRequestDto.builder().username("test").password("12345678").roles(Arrays.asList( "USER")).build());
+                User test = userRepository.findByUsername("gab").get();
 
                 // CREATE PRODUCT
 
