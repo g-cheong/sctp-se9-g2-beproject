@@ -28,9 +28,10 @@ public class SecurityConfig {
         .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests((requests) -> requests
             .requestMatchers("/api/users/**", "/api/cart/**").authenticated()
-            .requestMatchers(HttpMethod.POST, "/api/products/**").authenticated()
-            .requestMatchers(HttpMethod.PUT, "/api/products/**").authenticated()
-            .requestMatchers(HttpMethod.DELETE, "/api/products/**").authenticated()
+            // .requestMatchers(HttpMethod.POST, "/api/products/**").authenticated()
+            // .requestMatchers(HttpMethod.PUT, "/api/products/**").authenticated()
+            // .requestMatchers(HttpMethod.DELETE, "/api/products/**").authenticated()
+            .requestMatchers("/api/products").hasRole("ADMIN")
             .anyRequest().permitAll());
     return http.build();
   }

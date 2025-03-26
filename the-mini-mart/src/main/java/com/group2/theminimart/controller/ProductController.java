@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import com.group2.theminimart.dto.ProductDto;
 import com.group2.theminimart.dto.ProductRequestDto;
-import com.group2.theminimart.entity.Product;
 import com.group2.theminimart.service.ProductService;
 
 import io.swagger.v3.oas.annotations.Operation;

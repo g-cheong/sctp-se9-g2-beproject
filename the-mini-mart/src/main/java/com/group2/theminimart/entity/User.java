@@ -43,7 +43,7 @@ public class User {
     private String password;
 
     @Column
-    private String role;
+    private List<String> roles;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
