@@ -279,7 +279,6 @@ public class ProductServiceImplTest {
                                 .thenReturn(java.util.List.of());
 
                 // 2. EXECUTE
-                // var productDtos = productService.searchProducts("Camera", "", "Electronics");
                 ProductSearchNotFoundException exception = assertThrows(ProductSearchNotFoundException.class, () -> {
                         productService.searchProducts("Camera", "", "Electronics");
                 });
