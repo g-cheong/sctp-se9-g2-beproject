@@ -1,5 +1,8 @@
 package com.group2.theminimart.util;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import com.group2.theminimart.dto.UserRegisterRequestDto;
@@ -39,11 +42,11 @@ public class DataLoader {
 
                 // CREATE USER
                 userService.registerUser(
-                                UserRegisterRequestDto.builder().username("firhat").password("12345678").build());
+                UserRegisterRequestDto.builder().username("firhat").password("12345678").build());
                 User firhat = userRepository.findByUsername("firhat").get();
                 userService.registerUser(UserRegisterRequestDto.builder().username("min").password("12345678").build());
                 User min = userRepository.findByUsername("min").get();
-                userService.registerUser(UserRegisterRequestDto.builder().username("gab").password("12345678").build());
+                userService.registerUser(UserRegisterRequestDto.builder().username("gab").password("12345678").roles(Arrays.asList("ADMIN", "USER")).build());
                 User gab = userRepository.findByUsername("gab").get();
 
                 // CREATE PRODUCT

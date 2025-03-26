@@ -84,6 +84,8 @@ public class UserServiceImpl implements UserService {
         User user = UserMapper.userRegisterDtoToUser(userRegisterDto);
 
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userRegisterDto.getPassword())));
+        
+        user.setRoles(userRegisterDto.getRoles());
 
         User savedUser = userRepository.save(user);
 
@@ -97,7 +99,7 @@ public class UserServiceImpl implements UserService {
 
         if (passwordEncoder.matches(CharBuffer.wrap(userLoginRequestDto.getPassword()), user.getPassword())) {
             UserWithTokenResponseDto userWithToken = UserMapper.userToUserWithTokenDto(user);
-            userWithToken.setToken(userAuthenticationProvider.createToken(user.getUsername()));
+            userWithToken.setToken(userAuthenticationProvider.createToken(user.getUsername(), user.getRoles()));
             return userWithToken;
         }
         throw new UserWrongLoginDetailsException();

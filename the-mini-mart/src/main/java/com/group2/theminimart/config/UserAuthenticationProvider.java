@@ -13,11 +13,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Component
@@ -34,13 +37,19 @@ public class UserAuthenticationProvider {
     secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
   }
 
-  public String createToken(String username) {
+  public String createToken(String username, List<String> roles) {
     Date now = new Date();
     Date validity = new Date(now.getTime() + 3600000); // 1 hour
     Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
     return JWT.create()
         .withSubject(username)
+        .withClaim("roles", 
+            userRepository.findByUsername(username).orElseThrow(()-> new UserNotFoundException())
+            .getRoles()
+            .stream()
+            .map(role -> "ROLE_" + role)
+            .toList())
         .withIssuedAt(now)
         .withExpiresAt(validity)
         .sign(algorithm);
@@ -56,7 +65,12 @@ public class UserAuthenticationProvider {
 
     User user = userRepository.findByUsername(decoded.getSubject()).orElseThrow(() -> new UserNotFoundException());
 
-    return new UsernamePasswordAuthenticationToken(user.getUsername(), null, Collections.emptyList());
+    List<String> roles = decoded.getClaim("roles").asList(String.class);
+    List<SimpleGrantedAuthority> authorities = roles.stream()
+        .map(SimpleGrantedAuthority::new)
+        .toList();
+
+    return new UsernamePasswordAuthenticationToken(user.getUsername(), null, authorities);
   }
 
 }
