@@ -156,7 +156,7 @@ public class ProductControllerTest {
 
         @Test
         public void deleteProductTest() throws Exception {
-                // Step 1: Build a DELETE request to /products/1
+                // Step 1: Build a DELETE request to /products/2
                 RequestBuilder request = MockMvcRequestBuilders.delete("/api/products/2")
                                 .header("Authorization", "Bearer " + getToken());
 
