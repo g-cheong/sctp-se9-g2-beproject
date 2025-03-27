@@ -36,12 +36,6 @@ public class CartContentController {
         return new ResponseEntity<>(cartContentService.createCartContent(cartContent), HttpStatus.ACCEPTED);
     }
 
-    // read
-    // @GetMapping
-    // public ResponseEntity<ArrayList<CartContent>> getCartContents() {
-    // return new ResponseEntity<>(cartContentService.getCartContents(),
-    // HttpStatus.OK);
-    // }
     @Operation(summary = "Get Cart Content by User Id")
     @GetMapping("/{id}")
     public ResponseEntity<CartDto> getCartContent(@PathVariable Long userId) {

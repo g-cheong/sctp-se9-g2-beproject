@@ -1,6 +1,7 @@
 package com.group2.theminimart.service;
 
 import java.nio.CharBuffer;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -85,7 +86,7 @@ public class UserServiceImpl implements UserService {
 
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userRegisterDto.getPassword())));
         
-        user.setRoles(userRegisterDto.getRoles());
+        user.setRoles(Arrays.asList("USER"));
 
         User savedUser = userRepository.save(user);
 
