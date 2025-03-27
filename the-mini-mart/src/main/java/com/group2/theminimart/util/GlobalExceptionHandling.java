@@ -36,7 +36,8 @@ public class GlobalExceptionHandling {
     RatingAlreadyExistException.class,
     UserWrongLoginDetailsException.class,
     WrongUserException.class,
-   })
+    UserWrongLoginDetailsException.class 
+  })
   public ResponseEntity<ErrorResponse> handleBadRequestException(Exception e) {
     logger.error("🔴 " + HttpStatus.BAD_REQUEST + " " + e);
     ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), LocalDateTime.now());

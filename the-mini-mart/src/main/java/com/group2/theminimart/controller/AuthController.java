@@ -26,6 +26,13 @@ public class AuthController {
     this.userService = userService;
   }
 
+  @Operation(summary = "Register New Admin User")
+  @PostMapping("admin/register")
+  public ResponseEntity<UserResponseDto> registerAdminUser(@Valid @RequestBody UserRegisterRequestDto user) {
+    return new ResponseEntity<>(userService.registerAdminUser(user),
+        HttpStatus.CREATED);
+  }
+
   @Operation(summary = "Register New User")
   @PostMapping("/register")
   public ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody UserRegisterRequestDto user) {

@@ -83,8 +83,29 @@ public class UserServiceImpl implements UserService {
         User user = UserMapper.userRegisterDtoToUser(userRegisterDto);
 
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userRegisterDto.getPassword())));
-        
+
         user.setRoles(Arrays.asList("USER"));
+
+        User savedUser = userRepository.save(user);
+
+        return UserMapper.usertoUserResponseDto(savedUser);
+    }
+
+    @Override
+    public UserResponseDto registerAdminUser(UserRegisterRequestDto userRegisterDto) {
+
+        // check if username in database and throws error if does
+        Optional<User> userInDb = userRepository.findByUsername(userRegisterDto.getUsername());
+
+        if (userInDb.isPresent()) {
+            throw new UserAlreadyExistException();
+        }
+
+        User user = UserMapper.userRegisterDtoToUser(userRegisterDto);
+
+        user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userRegisterDto.getPassword())));
+
+        user.setRoles(Arrays.asList("ADMIN", "USER"));
 
         User savedUser = userRepository.save(user);
 
