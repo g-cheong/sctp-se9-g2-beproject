@@ -43,8 +43,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-    // TODO to implement validation
-
     private UserRepository userRepository;
     private RatingRepository ratingRepository;
     private ProductRepository productRepository;
