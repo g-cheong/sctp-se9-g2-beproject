@@ -13,6 +13,7 @@ import com.group2.theminimart.exception.RatingAlreadyExistException;
 import com.group2.theminimart.exception.RatingNotFoundException;
 import com.group2.theminimart.exception.UserAlreadyExistException;
 import com.group2.theminimart.exception.UserNotFoundException;
+import com.group2.theminimart.exception.UserWrongLoginDetailsException;
 import com.group2.theminimart.exception.WrongUserException;
 
 import org.slf4j.Logger;
@@ -33,7 +34,7 @@ public class GlobalExceptionHandling {
   // 404 Resource not found
   @ExceptionHandler({ CartNotFoundException.class, ProductNotFoundException.class, RatingNotFoundException.class,
       UserNotFoundException.class, ProductSearchNotFoundException.class, CartContentNotFoundException.class,
-      NoHandlerFoundException.class })
+      NoHandlerFoundException.class, UserWrongLoginDetailsException.class })
   public ResponseEntity<ErrorResponse> handleNotFoundException(Exception e) {
     logger.error("🔴 " + HttpStatus.NOT_FOUND + " " + e);
     ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), LocalDateTime.now());

@@ -14,6 +14,8 @@ public interface UserService {
     // register
     public UserResponseDto registerUser(UserRegisterRequestDto userRegisterDto);
 
+    public UserResponseDto registerAdminUser(UserRegisterRequestDto userRegisterDto);
+
     // login
     public UserWithTokenResponseDto loginUser(UserLoginRequestDto userLoginRequestDto);
 
