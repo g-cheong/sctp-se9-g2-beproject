@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> userInDb = userRepository.findByUsername(userRegisterDto.getUsername());
 
         if (userInDb.isPresent()) {
-            throw new UserAlreadyExistException();
+            throw new UserAlreadyExistException(userRegisterDto.getUsername());
         }
 
         User user = UserMapper.userRegisterDtoToUser(userRegisterDto);
@@ -94,14 +94,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserWithTokenResponseDto loginUser(UserLoginRequestDto userLoginRequestDto) {
         User user = userRepository.findByUsername(userLoginRequestDto.getUsername())
-                .orElseThrow(() -> new UserWrongLoginDetailsException());
+                .orElseThrow(() -> new UserWrongLoginDetailsException(""));
 
         if (passwordEncoder.matches(CharBuffer.wrap(userLoginRequestDto.getPassword()), user.getPassword())) {
             UserWithTokenResponseDto userWithToken = UserMapper.userToUserWithTokenDto(user);
             userWithToken.setToken(userAuthenticationProvider.createToken(user.getUsername(), user.getRoles()));
             return userWithToken;
         }
-        throw new UserWrongLoginDetailsException();
+        throw new UserWrongLoginDetailsException("");
     };
 
     @Override

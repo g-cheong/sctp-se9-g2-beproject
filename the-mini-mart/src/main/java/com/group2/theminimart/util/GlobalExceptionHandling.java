@@ -13,6 +13,7 @@ import com.group2.theminimart.exception.RatingAlreadyExistException;
 import com.group2.theminimart.exception.RatingNotFoundException;
 import com.group2.theminimart.exception.UserAlreadyExistException;
 import com.group2.theminimart.exception.UserNotFoundException;
+import com.group2.theminimart.exception.UserWrongLoginDetailsException;
 import com.group2.theminimart.exception.WrongUserException;
 
 import org.slf4j.Logger;
@@ -30,18 +31,12 @@ public class GlobalExceptionHandling {
 
   private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandling.class);
 
-  // 404 Resource not found
-  @ExceptionHandler({ CartNotFoundException.class, ProductNotFoundException.class, RatingNotFoundException.class,
-      UserNotFoundException.class, ProductSearchNotFoundException.class, CartContentNotFoundException.class,
-      NoHandlerFoundException.class })
-  public ResponseEntity<ErrorResponse> handleNotFoundException(Exception e) {
-    logger.error("🔴 " + HttpStatus.NOT_FOUND + " " + e);
-    ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), LocalDateTime.now());
-    return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-  }
-
   // 400 Bad Request
-  @ExceptionHandler({ WrongUserException.class, UserAlreadyExistException.class, RatingAlreadyExistException.class })
+  @ExceptionHandler({
+    RatingAlreadyExistException.class,
+    UserWrongLoginDetailsException.class,
+    WrongUserException.class,
+   })
   public ResponseEntity<ErrorResponse> handleBadRequestException(Exception e) {
     logger.error("🔴 " + HttpStatus.BAD_REQUEST + " " + e);
     ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), LocalDateTime.now());
@@ -64,8 +59,28 @@ public class GlobalExceptionHandling {
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
   }
 
-  @ExceptionHandler(CartContentAlreadyExistException.class)
-  public ResponseEntity<ErrorResponse> handleConflitError(CartContentAlreadyExistException e) {
+  // 404 Resource not found
+  @ExceptionHandler({
+    CartNotFoundException.class, 
+    CartContentNotFoundException.class,
+    NoHandlerFoundException.class, 
+    ProductNotFoundException.class, 
+    ProductSearchNotFoundException.class, 
+    RatingNotFoundException.class,
+    UserNotFoundException.class
+  })
+  public ResponseEntity<ErrorResponse> handleNotFoundException(Exception e) {
+    logger.error("🔴 " + HttpStatus.NOT_FOUND + " " + e);
+    ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), LocalDateTime.now());
+    return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+  } 
+
+  // 409 Conflict
+  @ExceptionHandler({
+    CartContentAlreadyExistException.class, 
+    UserAlreadyExistException.class
+  })
+  public ResponseEntity<ErrorResponse> handleConflitError(Exception e) {
     logger.error("🔴 " + HttpStatus.CONFLICT + " " + e.getMessage());
     ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), LocalDateTime.now());
     return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
