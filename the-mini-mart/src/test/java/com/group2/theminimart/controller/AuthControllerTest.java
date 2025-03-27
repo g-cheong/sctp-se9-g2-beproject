@@ -118,7 +118,7 @@ public class AuthControllerTest {
         .content(firhatAsJson);
 
     // Step 2: Perform the request, get the response and assert
-    mockMvc.perform(request).andExpect(status().isNotFound())
+    mockMvc.perform(request).andExpect(status().isBadRequest())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.message").value("Invalid username or password."));
   }
@@ -137,7 +137,7 @@ public class AuthControllerTest {
         .content(firhatAsJson);
 
     // Step 2: Perform the request, get the response and assert
-    mockMvc.perform(request).andExpect(status().isNotFound())
+    mockMvc.perform(request).andExpect(status().isBadRequest())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.message").value("Invalid username or password."));
   }

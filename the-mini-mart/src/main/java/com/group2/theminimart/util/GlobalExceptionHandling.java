@@ -34,7 +34,7 @@ public class GlobalExceptionHandling {
   // 404 Resource not found
   @ExceptionHandler({ CartNotFoundException.class, ProductNotFoundException.class, RatingNotFoundException.class,
       UserNotFoundException.class, ProductSearchNotFoundException.class, CartContentNotFoundException.class,
-      NoHandlerFoundException.class, UserWrongLoginDetailsException.class })
+      NoHandlerFoundException.class })
   public ResponseEntity<ErrorResponse> handleNotFoundException(Exception e) {
     logger.error("🔴 " + HttpStatus.NOT_FOUND + " " + e);
     ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), LocalDateTime.now());
@@ -42,7 +42,7 @@ public class GlobalExceptionHandling {
   }
 
   // 400 Bad Request
-  @ExceptionHandler({ WrongUserException.class, UserAlreadyExistException.class, RatingAlreadyExistException.class })
+  @ExceptionHandler({ WrongUserException.class, UserAlreadyExistException.class, RatingAlreadyExistException.class, UserWrongLoginDetailsException.class })
   public ResponseEntity<ErrorResponse> handleBadRequestException(Exception e) {
     logger.error("🔴 " + HttpStatus.BAD_REQUEST + " " + e);
     ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), LocalDateTime.now());
