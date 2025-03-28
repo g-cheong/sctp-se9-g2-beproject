@@ -1,6 +1,7 @@
 package com.group2.theminimart.dto;
 
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,12 +24,12 @@ public class CartDto {
     @Positive
     private Long id;
     private String title;
-    @Positive
+    @PositiveOrZero
     private double price;
     private String description;
     private String image;
-    @Positive
+    @PositiveOrZero
     private int quantity;
-    @Positive
+    @PositiveOrZero
     private double total;
 }

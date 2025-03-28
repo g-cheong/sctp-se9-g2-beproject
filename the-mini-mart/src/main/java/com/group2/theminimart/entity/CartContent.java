@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,9 +33,9 @@ public class CartContent {
     @Column(name = "id")
     private Long id;
     @Column(name = "count")
-    @Positive(message = "count must be a postive number")
+    @PositiveOrZero(message = "count must be a postive number")
     private int count;
-    @Positive(message = "total must be a positive number")
+    @PositiveOrZero(message = "total must be a positive number")
     @Column(name = "total")
     private double total;
 

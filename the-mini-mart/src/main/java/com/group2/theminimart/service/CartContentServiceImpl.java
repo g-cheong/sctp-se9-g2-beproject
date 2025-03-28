@@ -118,45 +118,50 @@ public class CartContentServiceImpl implements CartContentService {
                 .map(CartMapper::toDto)
                 .collect(Collectors.toList());
     }
-
-    @Override
+    
     public List<CartDto> updateCart(String username, List<CartDto> cartDtoList) {
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException());
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new UserNotFoundException());
+    
         List<CartContent> userCart = cartContentRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new UserNotFoundException(user.getId()));
-
-        // Create a map of existing CartContent by productId
+            .orElseThrow(() -> new UserNotFoundException(user.getId()));
+    
+        // Create a map of existing cart content
         Map<Long, CartContent> existingCartMap = userCart.stream()
-                .collect(Collectors.toMap(cartContent -> cartContent.getProduct().getId(), cartContent -> cartContent));
-
-        // Create or update CartContent based on CartDto data
+            .collect(Collectors.toMap(cartContent -> cartContent.getProduct().getId(), cartContent -> cartContent));
+    
+        // Process new items and update existing ones
         List<CartContent> updatedCart = cartDtoList.stream()
-                .map(cartDto -> {
-                    Product product = productRepository.findById(cartDto.getId())
-                            .orElseThrow(() -> new ProductNotFoundException(cartDto.getId()));
-                    CartContent existingCartContent = existingCartMap.get(cartDto.getId());
-
-                    if (existingCartContent != null) {
-                        // Update existing CartContent
-                        existingCartContent.setCount(cartDto.getQuantity());
-                        existingCartContent.setTotal(cartDto.getTotal());
-                        return cartContentRepository.save(existingCartContent);
-                    } else {
-                        // Create new CartContent
-                        CartContent newCartContent = new CartContent();
-                        newCartContent.setUser(user);
-                        newCartContent.setProduct(product);
-                        newCartContent.setCount(cartDto.getQuantity());
-                        newCartContent.setTotal(cartDto.getTotal());
-                        return cartContentRepository.save(newCartContent);
+            .map(cartDto -> {
+                Product product = productRepository.findById(cartDto.getId())
+                    .orElseThrow(() -> new ProductNotFoundException(cartDto.getId()));
+                CartContent existingCartContent = existingCartMap.get(cartDto.getId());
+    
+                if (existingCartContent != null) {
+                    if (cartDto.getQuantity() == 0) {																// ✅ Remove from DB if quantity is 0
+                        cartContentRepository.delete(existingCartContent);
+                        return null;
                     }
-                })
-                .collect(Collectors.toList());
-
-        return updatedCart
-                .stream()
-                .map(CartMapper::toDto)
-                .collect(Collectors.toList());
+                    existingCartContent.setCount(cartDto.getQuantity());
+                    existingCartContent.setTotal(cartDto.getTotal());
+                    return cartContentRepository.save(existingCartContent);
+                } else {
+                    CartContent newCartContent = new CartContent();
+                    newCartContent.setUser(user);
+                    newCartContent.setProduct(product);
+                    newCartContent.setCount(cartDto.getQuantity());
+                    newCartContent.setTotal(cartDto.getTotal());
+                    return cartContentRepository.save(newCartContent);
+                }
+            })
+            .collect(Collectors.toList());
+    
+        // Remove items that are no longer in the cart
+        userCart.stream()
+            .filter(cartContent -> cartDtoList.stream().noneMatch(dto -> dto.getId().equals(cartContent.getProduct().getId())))
+            .forEach(cartContentRepository::delete);
+    
+        return updatedCart.stream().map(CartMapper::toDto).collect(Collectors.toList());
     }
 
     @Override
