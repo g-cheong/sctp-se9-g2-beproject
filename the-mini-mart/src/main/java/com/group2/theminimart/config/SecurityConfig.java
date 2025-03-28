@@ -40,8 +40,6 @@ public class SecurityConfig {
 
             // only admin can get list of all users
             .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN")
-            // only admin can get user by id
-            .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("ADMIN")
             // authenticated users can update own passwords
             .requestMatchers(HttpMethod.PUT, "/api/users/**").authenticated()
             // authenticated users can delete own account

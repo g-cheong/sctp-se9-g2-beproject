@@ -38,8 +38,8 @@ public class CartContentController {
 
     @Operation(summary = "Get Cart Content by User Id")
     @GetMapping("/{id}")
-    public ResponseEntity<CartDto> getCartContent(@PathVariable Long userId) {
-        return new ResponseEntity<>(cartContentService.getCartContent(userId), HttpStatus.OK);
+    public ResponseEntity<CartDto> getCartContent(@PathVariable Long id) {
+        return new ResponseEntity<>(cartContentService.getCartContent(id), HttpStatus.OK);
     }
 
     // update
